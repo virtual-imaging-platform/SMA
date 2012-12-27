@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fr.insalyon.creatis</groupId>
+    <artifactId>sma-service</artifactId>
+    <version>0.1</version>
+    <packaging>pom</packaging>
+    <name>SMA</name>
+    <description>Send-Message-Agent</description>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    
+    <modules>
+        <module>sma-common</module>
+        <module>sma-client</module>
+        <module>sma-server</module>
+    </modules>
+    
+    <scm>
+        <connection>scm:svn:svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</connection>
+        <developerConnection>scm:svn:svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</developerConnection>
+        <url>svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</url>
+    </scm>
+
+</project>

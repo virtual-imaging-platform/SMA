@@ -1,0 +1,3 @@
+12-21 12:59:29 jdbc[2]: exception
+org.h2.jdbc.JdbcSQLException: Table "MESSAGEPOOL" already exists; SQL statement:
+CREATE TABLE MessagePool (id VARCHAR(100), registration TIMESTAMP, fromEmail VARCHAR(255), fromName VARCHAR(255), subject VARCHAR(255), contents CLOB, recipients CLOB, direct BOOLEAN, status VARCHAR(50), username VARCHAR(255), retrycount INT, PRIMARY KEY (id)) [42101-170]
