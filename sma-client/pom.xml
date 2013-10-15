@@ -5,7 +5,7 @@
     <groupId>fr.insalyon.creatis</groupId>
     <artifactId>sma-client</artifactId>
     <packaging>jar</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2</version>
     <name>SMA-Client</name>
     <build>
         <plugins>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>fr.insalyon.creatis</groupId>
             <artifactId>sma-common</artifactId>
-            <version>0.1</version>
+            <version>0.2</version>
         </dependency>
         
         <dependency>

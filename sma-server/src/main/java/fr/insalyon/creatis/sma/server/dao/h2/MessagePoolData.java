@@ -4,8 +4,6 @@
  * rafael.silva@creatis.insa-lyon.fr
  * http://www.rafaelsilva.com
  *
- * This software is a grid-enabled data-driven workflow manager and editor.
- *
  * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL
@@ -100,7 +98,7 @@ public class MessagePoolData implements MessagePoolDAO {
 
     @Override
     public void update(MessageOperation operation) throws DAOException {
-        
+
         try {
             PreparedStatement ps = connection.prepareStatement("UPDATE MessagePool "
                     + "SET registration = ?, fromEmail = ?, fromName = ?, "
@@ -120,7 +118,7 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.setString(11, operation.getId());
             ps.executeUpdate();
             ps.close();
-            
+
         } catch (SQLException ex) {
             logger.error(ex);
             throw new DAOException(ex);
@@ -129,7 +127,18 @@ public class MessagePoolData implements MessagePoolDAO {
 
     @Override
     public void remove(MessageOperation operation) throws DAOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            PreparedStatement ps = connection.prepareStatement("DELETE "
+                    + "FROM MessagePool WHERE id=?");
+
+            ps.setString(1, operation.getId());
+            ps.execute();
+            ps.close();
+
+        } catch (SQLException ex) {
+            logger.error(ex);
+            throw new DAOException(ex);
+        }
     }
 
     @Override
@@ -145,6 +154,33 @@ public class MessagePoolData implements MessagePoolDAO {
 
             ResultSet rs = ps.executeQuery();
             List<MessageOperation> operations = new ArrayList<MessageOperation>();
+            while (rs.next()) {
+                operations.add(getMessageOperation(rs));
+            }
+            ps.close();
+            return operations;
+
+        } catch (SQLException ex) {
+            logger.error(ex);
+            throw new DAOException(ex);
+        }
+    }
+
+    @Override
+    public List<MessageOperation> getOldOperations(Date date) throws DAOException {
+
+        try {
+            List<MessageOperation> operations = new ArrayList<MessageOperation>();
+            PreparedStatement ps = connection.prepareStatement(
+                    getSelect()
+                    + "WHERE registration < ? "
+                    + "AND (status = ? OR status = ?)"
+                    + "ORDER BY registration");
+
+            ps.setTimestamp(1, new Timestamp(date.getTime()));
+            ps.setString(2, OperationStatus.Done.name());
+            ps.setString(3, OperationStatus.Failed.name());
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 operations.add(getMessageOperation(rs));
             }

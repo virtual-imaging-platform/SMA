@@ -4,7 +4,7 @@
 
     <groupId>fr.insalyon.creatis</groupId>
     <artifactId>sma-service</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2</version>
     <packaging>pom</packaging>
     <name>SMA</name>
     <description>Send-Message-Agent</description>
@@ -43,7 +43,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>2.4</version>
                 <configuration>
                     <tagBase>svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/branches</tagBase>
                 </configuration>
@@ -51,7 +51,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
-                <version>1.7</version>
+                <version>1.8.1</version>
                 <configuration>
                     <connectionType>developerconnection</connectionType>
                 </configuration>
