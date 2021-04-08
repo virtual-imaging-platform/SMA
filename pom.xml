@@ -12,19 +12,19 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    
+
     <modules>
         <module>sma-common</module>
         <module>sma-client</module>
         <module>sma-server</module>
     </modules>
-    
+
     <scm>
         <connection>scm:svn:svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</connection>
         <developerConnection>scm:svn:svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</developerConnection>
         <url>svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</url>
     </scm>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -58,5 +58,28 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>creatis</id>
+            <name>Creatis Insa Lyon repository [creatis]</name>
+            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/public</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>creatis-releases</id>
+            <name>Internal Releases</name>
+            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/releases</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>creatis-snapshots</id>
+            <name>Internal Snapshots</name>
+            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/snapshots</url>
+        </snapshotRepository>
+
+    </distributionManagement>
 
 </project>
