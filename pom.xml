@@ -4,7 +4,7 @@
 
     <groupId>fr.insalyon.creatis</groupId>
     <artifactId>sma-service</artifactId>
-    <version>0.2</version>
+    <version>0.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>SMA</name>
     <description>Send-Message-Agent</description>
