@@ -91,7 +91,6 @@ public class MessagePoolBusiness {
         try {
             logger.info("Sending email to: " + recipients.toString());
             Configuration conf = Configuration.getInstance();
-            Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
             Properties props = new Properties();
             props.setProperty("mail.transport.protocol", conf.getMailProtocol());
             props.setProperty("mail.host", conf.getMailHost());
