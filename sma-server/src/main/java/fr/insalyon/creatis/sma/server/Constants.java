@@ -4,8 +4,6 @@
  * rafael.silva@creatis.insa-lyon.fr
  * http://www.rafaelsilva.com
  *
- * This software is a grid-enabled data-driven workflow manager and editor.
- *
  * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL
@@ -40,6 +38,7 @@ package fr.insalyon.creatis.sma.server;
  */
 public class Constants {
 
+    public static final String LAB_AGENT_MAX_HISTORY = "sma.max.history";
     public static final String LAB_AGENT_PORT = "sma.port";
     public static final String LAB_AGENT_RETRYCOUNT = "sma.retrycount";
     public static final String LAB_MAIL_HOST = "mail.host";

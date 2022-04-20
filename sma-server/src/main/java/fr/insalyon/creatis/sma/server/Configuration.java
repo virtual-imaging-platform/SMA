@@ -4,8 +4,6 @@
  * rafael.silva@creatis.insa-lyon.fr
  * http://www.rafaelsilva.com
  *
- * This software is a grid-enabled data-driven workflow manager and editor.
- *
  * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL
@@ -50,6 +48,7 @@ public class Configuration {
     private static final String confFile = "sma-server.conf";
     // General
     private int port;
+    private int maxHistory;
     private int maxRetryCount;
     private String mailHost;
     private String mailProtocol;
@@ -71,6 +70,7 @@ public class Configuration {
             PropertiesConfiguration config = new PropertiesConfiguration(new File(confFile));
 
             port = config.getInt(Constants.LAB_AGENT_PORT, 8082);
+            maxHistory = config.getInt(Constants.LAB_AGENT_MAX_HISTORY, 90);
             maxRetryCount = config.getInt(Constants.LAB_AGENT_RETRYCOUNT, 5);
             mailHost = config.getString(Constants.LAB_MAIL_HOST, "smtp.localhost");
             mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
@@ -79,6 +79,7 @@ public class Configuration {
             mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 5);
 
             config.setProperty(Constants.LAB_AGENT_PORT, port);
+            config.setProperty(Constants.LAB_AGENT_MAX_HISTORY, maxHistory);
             config.setProperty(Constants.LAB_AGENT_RETRYCOUNT, maxRetryCount);
             config.setProperty(Constants.LAB_MAIL_HOST, mailHost);
             config.setProperty(Constants.LAB_MAIL_PROTOCOL, mailProtocol);
@@ -95,6 +96,10 @@ public class Configuration {
 
     public int getPort() {
         return port;
+    }
+
+    public int getMaxHistory() {
+        return maxHistory;
     }
 
     public int getMaxRetryCount() {

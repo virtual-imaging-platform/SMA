@@ -4,8 +4,6 @@
  * rafael.silva@creatis.insa-lyon.fr
  * http://www.rafaelsilva.com
  *
- * This software is a grid-enabled data-driven workflow manager and editor.
- *
  * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL
@@ -36,6 +34,7 @@
 package fr.insalyon.creatis.sma.server.dao;
 
 import fr.insalyon.creatis.sma.common.bean.MessageOperation;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -51,4 +50,6 @@ public interface MessagePoolDAO {
     public void remove(MessageOperation operation) throws DAOException;
     
     public List<MessageOperation> getPendingOperations() throws DAOException;
+    
+    public List<MessageOperation> getOldOperations(Date date) throws DAOException;
 }

@@ -4,8 +4,6 @@
  * rafael.silva@creatis.insa-lyon.fr
  * http://www.rafaelsilva.com
  *
- * This software is a grid-enabled data-driven workflow manager and editor.
- *
  * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL
@@ -36,6 +34,7 @@ package fr.insalyon.creatis.sma.server;
 
 import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.server.execution.Executor;
+import fr.insalyon.creatis.sma.server.execution.MessageCleanerPool;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -59,6 +58,7 @@ public class Main {
             logger.info("Starting SMA Server on port " + Configuration.getInstance().getPort());
 
             // Pools
+            MessageCleanerPool.getInstance();
             
             // Socket
             ServerSocket serverSocket = new ServerSocket(
