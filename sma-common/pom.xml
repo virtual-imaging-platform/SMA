@@ -11,18 +11,6 @@
     <artifactId>sma-common</artifactId>
     <packaging>jar</packaging>
     <name>SMA-Common</name>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
     <dependencies>
         <dependency>
@@ -32,7 +20,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
+
     <repositories>
         <repository>
             <id>creatis</id>
@@ -53,6 +41,5 @@
             <name>Internal Snapshots</name>
             <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/snapshots</url>
         </snapshotRepository>
-
     </distributionManagement>
 </project>
