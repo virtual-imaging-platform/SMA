@@ -40,15 +40,14 @@ import fr.insalyon.creatis.sma.server.dao.DAOException;
 import fr.insalyon.creatis.sma.server.dao.DAOFactory;
 import fr.insalyon.creatis.sma.server.execution.MessagePool;
 import java.io.UnsupportedEncodingException;
-import java.security.Security;
 import java.util.Date;
 import java.util.Properties;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.log4j.Logger;
 
 /**
@@ -89,11 +88,12 @@ public class MessagePoolBusiness {
             String content, String[] recipients, boolean direct) throws BusinessException {
 
         try {
-            logger.info("Sending email to: " + recipients.toString());
+            logger.info("Sending email to: " + String.join(" ", recipients));
             Configuration conf = Configuration.getInstance();
             Properties props = new Properties();
             props.setProperty("mail.transport.protocol", conf.getMailProtocol());
             props.setProperty("mail.host", conf.getMailHost());
+            props.setProperty("mail.smtp.port", String.valueOf(conf.getMailPort()));
 
             Session session = Session.getDefaultInstance(props);
             session.setDebug(false);
