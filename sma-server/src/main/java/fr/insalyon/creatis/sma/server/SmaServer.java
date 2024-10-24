@@ -19,6 +19,15 @@ public class SmaServer extends Thread {
 
     private static final Logger logger = Logger.getLogger(Main.class);
 
+    private boolean started = false;
+
+    public synchronized void waitToBeReady() {
+        while (started == false) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {}
+        }
+    }
     @Override
     public void run() {
         PropertyConfigurator.configure(Main.class.getClassLoader().getResource("smaLog4j.properties"));
@@ -32,7 +41,8 @@ public class SmaServer extends Thread {
         // Socket
         try (ServerSocket serverSocket = new ServerSocket(
             Configuration.getInstance().getPort(), 50, InetAddress.getLocalHost())) {
-
+                
+            started = true;
             while (true) {
                 Socket socket = serverSocket.accept();
                 Communication communication = new Communication(socket);

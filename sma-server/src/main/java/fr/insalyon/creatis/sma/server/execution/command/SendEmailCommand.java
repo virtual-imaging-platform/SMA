@@ -66,7 +66,6 @@ public class SendEmailCommand extends Command {
 
     @Override
     public void execute() {
-
         try {
             MessageOperation operation = new MessageOperation(
                     Configuration.getInstance().getMailFrom(),

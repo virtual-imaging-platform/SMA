@@ -50,6 +50,7 @@ public class Configuration {
     private int port;
     private int maxHistory;
     private int maxRetryCount;
+    private int mailPort;
     private String mailHost;
     private String mailProtocol;
     private String mailFrom;
@@ -64,6 +65,10 @@ public class Configuration {
         return instance;
     }
 
+    public void setConfiguration(Configuration config) {
+        instance = config;
+    }
+
     private Configuration() {
         try {
             logger.info("Loading configuration file.");
@@ -73,6 +78,7 @@ public class Configuration {
             maxHistory = config.getInt(Constants.LAB_AGENT_MAX_HISTORY, 90);
             maxRetryCount = config.getInt(Constants.LAB_AGENT_RETRYCOUNT, 5);
             mailHost = config.getString(Constants.LAB_MAIL_HOST, "smtp.localhost");
+            mailPort = config.getInt(Constants.LAB_MAIL_PORT, 25);
             mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
             mailFrom = config.getString(Constants.LAB_MAIL_FROM, "example@example.com");
             mailFromName = config.getString(Constants.LAB_MAIL_FROM_NAME, "Example");
@@ -120,6 +126,10 @@ public class Configuration {
 
     public String getMailFromName() {
         return mailFromName;
+    }
+
+    public int getMailPort() {
+        return mailPort;
     }
 
     public int getMailMaxRuns() {
