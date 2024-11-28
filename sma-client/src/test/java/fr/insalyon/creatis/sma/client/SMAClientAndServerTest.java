@@ -52,7 +52,7 @@ public class SMAClientAndServerTest {
     }
     
     @BeforeAll
-    public void initServer() {
+    public void initServer() throws InterruptedException {
         mailServer = new GreenMail(ServerSetupTest.SMTP);
         smaServer = new SmaServer();
 

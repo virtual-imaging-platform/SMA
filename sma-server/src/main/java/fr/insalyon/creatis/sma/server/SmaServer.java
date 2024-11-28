@@ -21,11 +21,9 @@ public class SmaServer extends Thread {
 
     private boolean started = false;
 
-    public synchronized void waitToBeReady() {
+    public synchronized void waitToBeReady() throws InterruptedException {
         while (started == false) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {}
+            Thread.sleep(1000);
         }
     }
     @Override
@@ -50,7 +48,7 @@ public class SmaServer extends Thread {
             }
 
         } catch (IOException ex) {
-            logger.error(ex);
+            logger.error("Error processing a request ", ex);
         }
     }
 }

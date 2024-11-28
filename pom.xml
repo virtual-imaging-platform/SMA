@@ -4,15 +4,16 @@
 
     <groupId>fr.insalyon.creatis</groupId>
     <artifactId>sma-parent</artifactId>
-    <version>0.4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>SMA</name>
     <description>Send-Message-Agent</description>
+    <version>${sma.version}</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <sma.version>0.4.0-SNAPSHOT</sma.version>
     </properties>
 
     <modules>
@@ -20,47 +21,6 @@
         <module>sma-client</module>
         <module>sma-server</module>
     </modules>
-
-    <scm>
-        <connection>scm:svn:svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</connection>
-        <developerConnection>scm:svn:svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</developerConnection>
-        <url>svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/trunk</url>
-    </scm>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.0</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <tagBase>svn+ssh://svn.creatis.insa-lyon.fr/svn/vip/SMA/branches</tagBase>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <version>1.8.1</version>
-                <configuration>
-                    <connectionType>developerconnection</connectionType>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
     <repositories>
         <repository>
