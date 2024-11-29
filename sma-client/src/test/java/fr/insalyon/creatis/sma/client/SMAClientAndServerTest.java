@@ -75,22 +75,27 @@ public class SMAClientAndServerTest {
         final String message = "je suis vraiment trop fort";
         final String subject = "wow ce titre est incroyable";
         final String username = "bliblou";
+        String[] randomAddress;
         client = new SMAClient(InetAddress.getLocalHost(), configuration.getPort());
 
         for (int i = 0; i < 1000; i++) {
-            System.err.println(i);
-            client.sendEmail(subject, message, generateRandomAddress(), true, username);
+            randomAddress = generateRandomAddress();
+            client.sendEmail(subject, message, randomAddress, true, username);
+            System.err.println("Sending mail to : " + randomAddress[0]);
         }
 
         before = Instant.now();
+        System.err.println("Waiting for mails to reach de server !");
         while (mailServer.getReceivedMessages().length != 1000) {
+            System.err.println("Waiting !");
             Thread.sleep(1000);
             after = Instant.now();
-            assertFalse(Duration.between(before, after).toSeconds() > Constants.MAX_WAIT_SPAM);
+            assertFalse(Duration.between(before, after).toMillis() > Constants.MAX_WAIT_SPAM);
         }
+        System.err.println("All mails sended !");
 
         for (final MimeMessage mail : mailServer.getReceivedMessages()) {
-            // System.err.println("mail reçu de " + mail.getRecipients(RecipientType.TO)[0].toString());
+            System.err.println("Checking mail to " + mail.getAllRecipients()[0].toString());
             assertEquals(mail.getSubject(), subject);
             assertEquals(mail.getContent(), message);
         }

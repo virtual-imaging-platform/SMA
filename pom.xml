@@ -7,13 +7,15 @@
     <packaging>pom</packaging>
     <name>SMA</name>
     <description>Send-Message-Agent</description>
-    <version>${sma.version}</version>
+    <version>${revision}${sha1}${changelist}</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <sma.version>0.4.0-SNAPSHOT</sma.version>
+        <revision>0.4.0</revision>
+        <changelist>-SNAPSHOT</changelist>
+        <sha1/>
     </properties>
 
     <modules>
@@ -21,6 +23,36 @@
         <module>sma-client</module>
         <module>sma-server</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>flatten-maven-plugin</artifactId>
+              <version>1.1.0</version>
+              <configuration>
+                <updatePomFile>true</updatePomFile>
+                <flattenMode>resolveCiFriendliesOnly</flattenMode>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>flatten</id>
+                  <phase>process-resources</phase>
+                  <goals>
+                    <goal>flatten</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>flatten.clean</id>
+                  <phase>clean</phase>
+                  <goals>
+                    <goal>clean</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+        </plugins>
+    </build>
 
     <repositories>
         <repository>

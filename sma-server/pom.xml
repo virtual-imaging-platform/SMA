@@ -5,7 +5,7 @@
     <parent>
         <groupId>fr.insalyon.creatis</groupId>
         <artifactId>sma-parent</artifactId>
-        <version>${sma.version}</version>
+        <version>${revision}${sha1}${changelist}</version>
     </parent>
 
     <artifactId>sma-server</artifactId>
@@ -48,7 +48,7 @@
         <dependency>
             <groupId>fr.insalyon.creatis</groupId>
             <artifactId>sma-common</artifactId>
-            <version>${sma.version}</version>
+            <version>${revision}${sha1}${changelist}</version>
         </dependency>
         
         <dependency>
