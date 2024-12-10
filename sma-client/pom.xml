@@ -6,62 +6,46 @@
     <parent>
         <groupId>fr.insalyon.creatis</groupId>
         <artifactId>sma-parent</artifactId>
-        <version>0.4.0-SNAPSHOT</version>
+        <version>${revision}${sha1}${changelist}</version>
     </parent>
+
     <artifactId>sma-client</artifactId>
     <packaging>jar</packaging>
     <name>SMA-Client</name>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    
     <dependencies>
-        
         <dependency>
             <groupId>fr.insalyon.creatis</groupId>
             <artifactId>sma-common</artifactId>
-            <version>0.3.0</version>
+            <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.10</version>
+            <groupId>fr.insalyon.creatis</groupId>
+            <artifactId>sma-server</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.11.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.icegreen</groupId>
+            <artifactId>greenmail</artifactId>
+            <version>2.1.0</version>
+            <scope>test</scope>
+        </dependency>       
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.13.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>creatis</id>
-            <name>Creatis Insa Lyon repository [creatis]</name>
-            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/public</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>creatis-releases</id>
-            <name>Internal Releases</name>
-            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/releases</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>creatis-snapshots</id>
-            <name>Internal Snapshots</name>
-            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/snapshots</url>
-        </snapshotRepository>
-
-    </distributionManagement>
 </project>

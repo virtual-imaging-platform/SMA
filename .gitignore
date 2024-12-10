@@ -1,3 +1,7 @@
 /sma-client/target/
 /sma-common/target/
 /sma-server/target/
+db/
+sma-server.conf
+sma-server.log
+.flattened-pom.xml

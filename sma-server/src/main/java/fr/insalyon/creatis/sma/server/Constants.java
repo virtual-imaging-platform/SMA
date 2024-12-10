@@ -42,6 +42,7 @@ public class Constants {
     public static final String LAB_AGENT_PORT = "sma.port";
     public static final String LAB_AGENT_RETRYCOUNT = "sma.retrycount";
     public static final String LAB_MAIL_HOST = "mail.host";
+    public static final String LAB_MAIL_PORT = "mail.port";
     public static final String LAB_MAIL_PROTOCOL = "mail.transport.protocol";
     public static final String LAB_MAIL_FROM = "mail.from";
     public static final String LAB_MAIL_FROM_NAME = "mail.from.name";

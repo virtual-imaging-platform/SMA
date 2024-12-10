@@ -38,6 +38,7 @@ import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.common.Constants;
 import fr.insalyon.creatis.sma.common.ExecutorConstants;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -47,10 +48,15 @@ import java.net.UnknownHostException;
  */
 public class SMAClient {
 
-    private String host;
-    private int port;
+    private InetAddress host;
+    private int         port;
 
-    public SMAClient(String host, int port) {
+    public SMAClient(String host, int port) throws UnknownHostException {
+        this.host = InetAddress.getByName(host);
+        this.port = port;
+    }
+
+    public SMAClient(InetAddress host, int port) {
         this.host = host;
         this.port = port;
     }
