@@ -17,13 +17,13 @@
         <dependency>
             <groupId>fr.insalyon.creatis</groupId>
             <artifactId>sma-common</artifactId>
-            <version>${revision}${sha1}${changelist}</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>fr.insalyon.creatis</groupId>
             <artifactId>sma-server</artifactId>
-            <version>${revision}${sha1}${changelist}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
