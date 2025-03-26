@@ -56,7 +56,6 @@ public class Executor extends Thread {
 
     @Override
     public void run() {
-
         try {
             String message = communication.getMessage();
             if (message != null) {
@@ -88,7 +87,7 @@ public class Executor extends Thread {
 
         try {
             String[] tk = message.split(Constants.MSG_SEP_1);
-            int command = new Integer(tk[0]);
+            int command = Integer.parseInt(tk[0]);
 
             switch (command) {
 

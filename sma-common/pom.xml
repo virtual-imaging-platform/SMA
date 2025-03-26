@@ -2,23 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>fr.insalyon.creatis</groupId>
+
+    <parent>
+        <groupId>fr.insalyon.creatis</groupId>
+        <artifactId>sma-parent</artifactId>
+        <version>${revision}${sha1}${changelist}</version>
+    </parent>
+
     <artifactId>sma-common</artifactId>
     <packaging>jar</packaging>
-    <version>0.3.0</version>
     <name>SMA-Common</name>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
     
     <dependencies>
         <dependency>
@@ -28,27 +21,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    
-    <repositories>
-        <repository>
-            <id>creatis</id>
-            <name>Creatis Insa Lyon repository [creatis]</name>
-            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/public</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>creatis-releases</id>
-            <name>Internal Releases</name>
-            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/releases</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>creatis-snapshots</id>
-            <name>Internal Snapshots</name>
-            <url>https://vip.creatis.insa-lyon.fr:9007/nexus/repository/snapshots</url>
-        </snapshotRepository>
-
-    </distributionManagement>
 </project>

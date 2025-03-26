@@ -120,9 +120,7 @@ public class MessagePool extends Thread {
                         operation.isDirect());
                 updateStatus(operation, OperationStatus.Done);
                 
-            } catch (DAOException ex) {
-                retry();
-            } catch (BusinessException ex) {
+            } catch (DAOException | BusinessException ex) {
                 logger.error(ex);
                 retry();
             } finally {

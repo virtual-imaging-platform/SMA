@@ -32,46 +32,15 @@
  */
 package fr.insalyon.creatis.sma.server;
 
-import fr.insalyon.creatis.sma.common.Communication;
-import fr.insalyon.creatis.sma.server.execution.Executor;
-import fr.insalyon.creatis.sma.server.execution.MessageCleanerPool;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
-
 /**
  *
  * @author Rafael Ferreira da Silva
  */
 public class Main {
 
-    private static final Logger logger = Logger.getLogger(Main.class);
-
     public static void main(String[] args) {
-        try {
-            PropertyConfigurator.configure(Main.class.getClassLoader().getResource("smaLog4j.properties"));
+        SmaServer server = new SmaServer();
 
-            Configuration.getInstance();
-            logger.info("Starting SMA Server on port " + Configuration.getInstance().getPort());
-
-            // Pools
-            MessageCleanerPool.getInstance();
-            
-            // Socket
-            ServerSocket serverSocket = new ServerSocket(
-                    Configuration.getInstance().getPort(), 50, InetAddress.getLocalHost());
-
-            while (true) {
-                Socket socket = serverSocket.accept();
-                Communication communication = new Communication(socket);
-                new Executor(communication).start();
-            }
-
-        } catch (IOException ex) {
-            logger.error(ex);
-        }
+        server.run();
     }
 }
