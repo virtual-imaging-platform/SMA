@@ -50,7 +50,7 @@ public class H2DAOFactory extends DAOFactory {
     private static final Logger logger = Logger.getLogger(H2DAOFactory.class);
     private static H2DAOFactory instance;
     private final String DRIVER = "org.h2.Driver";
-    private final String DBURL = "jdbc:h2:db/sma.db";
+    private final String DBURL = "jdbc:h2:./db/sma.db";
     private Connection connection;
 
     public static H2DAOFactory getInstance() {
