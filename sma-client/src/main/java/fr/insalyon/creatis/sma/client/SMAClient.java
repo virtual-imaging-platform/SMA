@@ -61,6 +61,16 @@ public class SMAClient {
         this.port = port;
     }
 
+    public static void main(String[] args) throws UnknownHostException, SMAClientException {
+        if (args.length != 7) {
+            throw new IllegalArgumentException("illegal argument number");
+        }
+        SMAClient smaClient = new SMAClient(args[0], Integer.parseInt(args[1]));
+        for (int i=0; i< Integer.parseInt(args[6]); i++) {
+                smaClient.sendEmail(args[2], args[3], new String[]{args[4]}, true, args[5]);
+        }
+    }
+
     /**
      *
      * @param subject
