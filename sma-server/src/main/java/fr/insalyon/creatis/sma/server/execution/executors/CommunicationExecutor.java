@@ -32,11 +32,12 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package fr.insalyon.creatis.sma.server.execution;
+package fr.insalyon.creatis.sma.server.execution.executors;
 
 import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.common.Constants;
 import fr.insalyon.creatis.sma.common.ExecutorConstants;
+import fr.insalyon.creatis.sma.server.execution.Command;
 import fr.insalyon.creatis.sma.server.execution.command.SendEmailCommand;
 import java.io.IOException;
 import org.apache.log4j.Logger;
@@ -45,12 +46,12 @@ import org.apache.log4j.Logger;
  *
  * @author Rafael Ferreira da Silva
  */
-public class Executor extends Thread {
+public class CommunicationExecutor extends Thread {
 
-    private static final Logger logger = Logger.getLogger(Executor.class);
+    private static final Logger logger = Logger.getLogger(CommunicationExecutor.class);
     private Communication communication;
 
-    public Executor(Communication communication) {
+    public CommunicationExecutor(Communication communication) {
         this.communication = communication;
     }
 
@@ -78,13 +79,7 @@ public class Executor extends Thread {
         }
     }
 
-    /**
-     * 
-     * @param message
-     * @return 
-     */
     private Command parseCommand(String message) {
-
         try {
             String[] tk = message.split(Constants.MSG_SEP_1);
             int command = Integer.parseInt(tk[0]);
@@ -106,12 +101,7 @@ public class Executor extends Thread {
         return null;
     }
 
-    /**
-     * 
-     * @param ex 
-     */
     private void logException(Exception ex) {
-
         communication.sendErrorMessage(ex.getMessage());
         communication.sendEndOfMessage();
 

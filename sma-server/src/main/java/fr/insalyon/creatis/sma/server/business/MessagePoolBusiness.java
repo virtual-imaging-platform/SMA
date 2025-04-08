@@ -35,10 +35,11 @@
 package fr.insalyon.creatis.sma.server.business;
 
 import fr.insalyon.creatis.sma.common.bean.MessageOperation;
-import fr.insalyon.creatis.sma.server.Configuration;
 import fr.insalyon.creatis.sma.server.dao.DAOException;
-import fr.insalyon.creatis.sma.server.dao.DAOFactory;
-import fr.insalyon.creatis.sma.server.execution.MessagePool;
+import fr.insalyon.creatis.sma.server.dao.H2Factory;
+import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
+import fr.insalyon.creatis.sma.server.utils.Configuration;
+
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
@@ -58,32 +59,18 @@ public class MessagePoolBusiness {
 
     private final static Logger logger = Logger.getLogger(MessagePoolBusiness.class);
 
-    /**
-     *
-     * @param operation
-     * @throws BusinessException
-     */
     public void addOperation(MessageOperation operation) throws BusinessException {
-
         try {
-            DAOFactory.getDAOFactory().getMessagePoolDAO().add(operation);
-            MessagePool.getInstance();
+            MessagePoolDAO poolDAO = H2Factory.getInstance().getMessagePoolDAO();
+
+            poolDAO.add(operation);
+            poolDAO.close();
 
         } catch (DAOException ex) {
             throw new BusinessException(ex);
         }
     }
 
-    /**
-     *
-     * @param ownerEmail
-     * @param owner
-     * @param subject
-     * @param content
-     * @param recipients
-     * @param direct
-     * @throws BusinessException
-     */
     public void sendEmail(String ownerEmail, String owner, String subject,
             String content, String[] recipients, boolean direct) throws BusinessException {
 

@@ -30,7 +30,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package fr.insalyon.creatis.sma.server;
+package fr.insalyon.creatis.sma.server.utils;
 
 import java.io.File;
 import org.apache.commons.configuration.ConfigurationException;
@@ -58,7 +58,6 @@ public class Configuration {
     private int mailMaxRuns;
 
     public static Configuration getInstance() {
-
         if (instance == null) {
             instance = new Configuration();
         }
@@ -82,7 +81,7 @@ public class Configuration {
             mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
             mailFrom = config.getString(Constants.LAB_MAIL_FROM, "example@example.com");
             mailFromName = config.getString(Constants.LAB_MAIL_FROM_NAME, "Example");
-            mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 5);
+            mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 50);
 
             config.setProperty(Constants.LAB_AGENT_PORT, port);
             config.setProperty(Constants.LAB_AGENT_MAX_HISTORY, maxHistory);

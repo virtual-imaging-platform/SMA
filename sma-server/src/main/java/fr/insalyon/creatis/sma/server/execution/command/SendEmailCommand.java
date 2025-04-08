@@ -36,10 +36,10 @@ package fr.insalyon.creatis.sma.server.execution.command;
 
 import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.common.bean.MessageOperation;
-import fr.insalyon.creatis.sma.server.Configuration;
 import fr.insalyon.creatis.sma.server.business.BusinessException;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 import fr.insalyon.creatis.sma.server.execution.Command;
+import fr.insalyon.creatis.sma.server.utils.Configuration;
 
 /**
  *

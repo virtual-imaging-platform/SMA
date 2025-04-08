@@ -21,8 +21,8 @@ import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 
-import fr.insalyon.creatis.sma.server.Configuration;
 import fr.insalyon.creatis.sma.server.SmaServer;
+import fr.insalyon.creatis.sma.server.utils.Configuration;
 import jakarta.mail.internet.MimeMessage;
 
 @TestInstance(Lifecycle.PER_CLASS)
@@ -45,7 +45,7 @@ public class SMAClientAndServerTest {
         when(configuration.getMaxRetryCount()).thenReturn(5);
         when(configuration.getMailFrom()).thenReturn("test@test.com");
         when(configuration.getMailFromName()).thenReturn("test");
-        when(configuration.getMailMaxRuns()).thenReturn(5);
+        when(configuration.getMailMaxRuns()).thenReturn(10);
         when(configuration.getMailPort()).thenReturn(server.getPort());
 
         Configuration.getInstance().setConfiguration(configuration);
@@ -54,18 +54,17 @@ public class SMAClientAndServerTest {
     @BeforeAll
     public void initServer() throws InterruptedException {
         mailServer = new GreenMail(ServerSetupTest.SMTP);
-        smaServer = new SmaServer();
-
         mailServer.start();
         mockConfig(mailServer.getSmtp());
-
+        
+        smaServer = new SmaServer();
         smaServer.start();
         smaServer.waitToBeReady();
     }
 
     @AfterAll
     public void stopServer() {
-        smaServer.interrupt();;
+        smaServer.interrupt();
         mailServer.stop();
     }
 
@@ -90,7 +89,7 @@ public class SMAClientAndServerTest {
             System.err.println("Waiting !");
             Thread.sleep(1000);
             after = Instant.now();
-            assertFalse(Duration.between(before, after).toMillis() > Constants.MAX_WAIT_SPAM);
+             assertFalse(Duration.between(before, after).toSeconds() > Constants.MAX_WAIT_SPAM_SEC);
         }
         System.err.println("All mails sended !");
 
