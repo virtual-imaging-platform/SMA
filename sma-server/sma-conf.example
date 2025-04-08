@@ -1,7 +1,19 @@
 sma.port = 8082
 sma.retrycount = 5
+
+mail.transport.protocol = smtps
 mail.host = smtp.creatis.insa-lyon.fr
-mail.transport.protocol = smtp
+mail.port = 1
+mail.smtp.ssl.trust = localhost
+
+mail.auth = True
+mail.username = b
+mail.password = a
+
 mail.from = vip-support@creatis.insa-lyon.fr
 mail.from.name = VIP Support
 mail.max.simultaneous.runs = 5
+
+# smtp -> port 25, protocol smtp with no auth
+# smtps -> port 465, protocol smtps with auth
+# starttls (auto) -> port 587, protocol smtp with auth
