@@ -50,6 +50,7 @@ public class Constants {
 
     public static final int CLEANER_POOL_SLEEP_HOURS = 24;
     public static final int MESSAGE_POOL_SLEEP_SECONDS = 2;
+    public static final int MESSAGE_POOL_MAX_WAIT_SECONDS = 60;
     public static final int TIMEOUT_POOL_SECONDS = 30;
     public static final int MAX_DB_CONNECTIONS = 25;
 }

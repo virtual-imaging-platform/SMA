@@ -38,10 +38,13 @@ import fr.insalyon.creatis.sma.server.dao.H2Factory;
 import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
 import fr.insalyon.creatis.sma.server.execution.executors.MessageExecutor;
 import fr.insalyon.creatis.sma.server.utils.Configuration;
+import fr.insalyon.creatis.sma.server.utils.Constants;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
@@ -85,17 +88,16 @@ public class ScheduledTasks {
     public void messagePool() {
         try {
             final MessagePoolDAO messagePoolDAO = H2Factory.getInstance().getMessagePoolDAO();
-            List<MessageOperation> pendingOperations = messagePoolDAO.getPendingOperations();
-
-            if ( ! pendingOperations.isEmpty()) {
-                for (MessageOperation mo : pendingOperations) {
-                    executor.submit(() -> new MessageExecutor(mo).send());
-                }
-            }
+            List<Callable<Void>> callablesOperations = messagePoolDAO.getPendingOperations().stream()
+                .map(op -> (Callable<Void>) () -> {
+                    new MessageExecutor(op).send();
+                    return null;
+                }).toList();
 
             messagePoolDAO.close();
+            executor.invokeAll(callablesOperations, Constants.MESSAGE_POOL_MAX_WAIT_SECONDS, TimeUnit.SECONDS);
 
-        } catch (DAOException e) {
+        } catch (DAOException | InterruptedException e) {
             logger.warn("Failed to run Message Pool properly!");
         }
     }
