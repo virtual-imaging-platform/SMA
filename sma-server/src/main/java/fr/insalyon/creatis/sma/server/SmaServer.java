@@ -38,7 +38,7 @@ public class SmaServer extends Thread {
         
         // Socket
         try (ServerSocket serverSocket = new ServerSocket(
-            Configuration.getInstance().getPort(), 50, InetAddress.getLocalHost())) {
+            Configuration.getInstance().getPort(), 50, InetAddress.getByName("0.0.0.0"))) {
                 
             started = true;
             while (true) {
