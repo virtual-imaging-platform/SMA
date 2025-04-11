@@ -73,15 +73,21 @@ public class MessagePoolBusiness {
 
     public void sendEmail(String ownerEmail, String owner, String subject,
             String content, String[] recipients, boolean direct) throws BusinessException {
-
+        // see https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html 
         try {
             logger.info("Sending email to: " + String.join(" ", recipients));
             Configuration conf = Configuration.getInstance();
             Properties props = new Properties();
             props.setProperty("mail.transport.protocol", conf.getMailProtocol());
-            props.setProperty("mail.host", conf.getMailHost());
+            props.setProperty("mail.smtp.host", conf.getMailHost());
             props.setProperty("mail.smtp.port", String.valueOf(conf.getMailPort()));
+            props.setProperty("mail.smtp.auth", String.valueOf(conf.isMailAuth()));
+            props.setProperty("mail.smtp.starttls.enable", String.valueOf(conf.isMailAuth()));
 
+            if ( ! conf.getMailSslTrust().isBlank()) {
+                props.setProperty("mail.smtp.ssl.trust", conf.getMailSslTrust());
+            }
+            
             Session session = Session.getDefaultInstance(props);
             session.setDebug(false);
 
@@ -96,7 +102,14 @@ public class MessagePoolBusiness {
             mimeMessage.setSubject(subject);
 
             Transport transport = session.getTransport();
-            transport.connect();
+
+            if (conf.isMailAuth()) {
+                transport.connect(
+                    conf.getMailHost(), conf.getMailPort(),
+                    conf.getMailUsername(), conf.getMailPassword());
+            } else {
+                transport.connect();
+            }
 
             InternetAddress[] addressTo = null;
 
@@ -117,10 +130,7 @@ public class MessagePoolBusiness {
             } else {
                 logger.warn("There's no recipients to send the email.");
             }
-        } catch (UnsupportedEncodingException ex) {
-            logger.error(ex);
-            throw new BusinessException(ex);
-        } catch (MessagingException ex) {
+        } catch (UnsupportedEncodingException | MessagingException ex) {
             logger.error(ex);
             throw new BusinessException(ex);
         }

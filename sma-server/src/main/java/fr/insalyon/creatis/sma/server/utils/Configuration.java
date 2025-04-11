@@ -51,7 +51,11 @@ public class Configuration {
     private int maxHistory;
     private int maxRetryCount;
     private int mailPort;
+    private boolean mailAuth;
     private String mailHost;
+    private String mailSslTrust;
+    private String mailUsername;
+    private String mailPassword;
     private String mailProtocol;
     private String mailFrom;
     private String mailFromName;
@@ -74,9 +78,13 @@ public class Configuration {
             PropertiesConfiguration config = new PropertiesConfiguration(new File(confFile));
 
             port = config.getInt(Constants.LAB_AGENT_PORT, 8082);
+            mailAuth = config.getBoolean(Constants.LAB_MAIL_AUTH, false);
+            mailUsername = config.getString(Constants.LAB_MAIL_USERNAME, "default");
+            mailPassword = config.getString(Constants.LAB_MAIL_PASSWORD, "password");
             maxHistory = config.getInt(Constants.LAB_AGENT_MAX_HISTORY, 90);
             maxRetryCount = config.getInt(Constants.LAB_AGENT_RETRYCOUNT, 5);
             mailHost = config.getString(Constants.LAB_MAIL_HOST, "smtp.localhost");
+            mailSslTrust = config.getString(Constants.LAB_MAIL_SSL_TRUST, "");
             mailPort = config.getInt(Constants.LAB_MAIL_PORT, 25);
             mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
             mailFrom = config.getString(Constants.LAB_MAIL_FROM, "example@example.com");
@@ -84,10 +92,18 @@ public class Configuration {
             mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 50);
 
             config.setProperty(Constants.LAB_AGENT_PORT, port);
-            config.setProperty(Constants.LAB_AGENT_MAX_HISTORY, maxHistory);
             config.setProperty(Constants.LAB_AGENT_RETRYCOUNT, maxRetryCount);
-            config.setProperty(Constants.LAB_MAIL_HOST, mailHost);
+            config.setProperty(Constants.LAB_AGENT_MAX_HISTORY, maxHistory);
+
             config.setProperty(Constants.LAB_MAIL_PROTOCOL, mailProtocol);
+            config.setProperty(Constants.LAB_MAIL_HOST, mailHost);
+            config.setProperty(Constants.LAB_MAIL_PORT, mailPort);
+            config.setProperty(Constants.LAB_MAIL_SSL_TRUST, mailSslTrust);
+
+            config.setProperty(Constants.LAB_MAIL_AUTH, mailAuth);
+            config.setProperty(Constants.LAB_MAIL_USERNAME, mailUsername);
+            config.setProperty(Constants.LAB_MAIL_PASSWORD, mailPassword);
+
             config.setProperty(Constants.LAB_MAIL_FROM, mailFrom);
             config.setProperty(Constants.LAB_MAIL_FROM_NAME, mailFromName);
             config.setProperty(Constants.LAB_MAIL_MAX_RUNS, mailMaxRuns);
@@ -111,8 +127,24 @@ public class Configuration {
         return maxRetryCount;
     }
 
+    public boolean isMailAuth() {
+        return mailAuth;
+    }
+
     public String getMailHost() {
         return mailHost;
+    }
+
+    public String getMailSslTrust() {
+        return mailSslTrust;
+    }
+
+    public String getMailUsername() {
+        return mailUsername;
+    }
+
+    public String getMailPassword() {
+        return mailPassword;
     }
 
     public String getMailProtocol() {
