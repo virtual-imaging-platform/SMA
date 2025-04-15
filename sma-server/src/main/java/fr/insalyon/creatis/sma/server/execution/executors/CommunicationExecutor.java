@@ -37,6 +37,7 @@ package fr.insalyon.creatis.sma.server.execution.executors;
 import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.common.Constants;
 import fr.insalyon.creatis.sma.common.ExecutorConstants;
+import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 import fr.insalyon.creatis.sma.server.execution.Command;
 import fr.insalyon.creatis.sma.server.execution.command.SendEmailCommand;
 import java.io.IOException;
@@ -48,11 +49,13 @@ import org.apache.log4j.Logger;
  */
 public class CommunicationExecutor extends Thread {
 
-    private static final Logger logger = Logger.getLogger(CommunicationExecutor.class);
-    private Communication communication;
+    private static final Logger LOG = Logger.getLogger(CommunicationExecutor.class);
+    private final Communication communication;
+    private final MessagePoolBusiness poolBusiness;
 
-    public CommunicationExecutor(Communication communication) {
+    public CommunicationExecutor(Communication communication, MessagePoolBusiness poolBusiness) {
         this.communication = communication;
+        this.poolBusiness = poolBusiness;
     }
 
     @Override
@@ -63,18 +66,18 @@ public class CommunicationExecutor extends Thread {
                 Command command = parseCommand(message);
 
                 if (command != null) {
-                    command.execute();
+                    command.execute(poolBusiness);
                 }
             } else {
                 logException(new Exception("Error during message receive: " + message));
             }
         } catch (IOException ex) {
-            logger.error(ex);
+            LOG.error(ex);
         } finally {
             try {
                 communication.close();
             } catch (IOException ex) {
-                logger.error(ex);
+                LOG.error(ex);
             }
         }
     }
@@ -105,11 +108,6 @@ public class CommunicationExecutor extends Thread {
         communication.sendErrorMessage(ex.getMessage());
         communication.sendEndOfMessage();
 
-        logger.error(ex.getMessage());
-        if (logger.isDebugEnabled()) {
-            for (StackTraceElement stack : ex.getStackTrace()) {
-                logger.debug(stack);
-            }
-        }
+        LOG.error("Exception occured", ex);
     }
 }

@@ -32,9 +32,8 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package fr.insalyon.creatis.sma.server.dao;
+package fr.insalyon.creatis.sma.server.dao.h2;
 
-import fr.insalyon.creatis.sma.server.dao.h2.MessagePoolData;
 import fr.insalyon.creatis.sma.server.utils.Constants;
 
 import java.sql.Connection;
@@ -50,7 +49,7 @@ import org.h2.jdbcx.JdbcConnectionPool;
  */
 public class H2Factory {
 
-    private static final Logger logger = Logger.getLogger(H2Factory.class);
+    private static final Logger LOG = Logger.getLogger(H2Factory.class);
     private static H2Factory instance;
     private final String DBURL = "jdbc:h2:file:./db/sma.dbl";
     private JdbcConnectionPool connectionPool;
@@ -90,23 +89,14 @@ public class H2Factory {
                 st.executeUpdate("CREATE INDEX user_idx ON MessagePool(username)");
             }
         } catch (SQLException ex) {
-            logger.info("Table MessagePool already exists!");
+            LOG.info("Table MessagePool already exists!");
         }
     }
 
-    private Connection getConnection() throws SQLException {
+    Connection getConnection() throws SQLException {
         Connection connection = connectionPool.getConnection();
 
         connection.setAutoCommit(true);
         return connection;
-    }
-
-    public MessagePoolDAO getMessagePoolDAO() throws DAOException {
-        try {
-            return new MessagePoolData(getConnection());
-        } catch (SQLException e) {
-            DAOException.logException(e);
-            throw new DAOException(e);
-        }
     }
 }

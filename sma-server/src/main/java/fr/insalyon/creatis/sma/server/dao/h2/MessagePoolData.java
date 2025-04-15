@@ -52,20 +52,7 @@ import org.apache.log4j.Logger;
  */
 public class MessagePoolData implements MessagePoolDAO {
 
-    private final static Logger logger = Logger.getLogger(MessagePoolData.class);
-    private Connection connection;
-
-    public MessagePoolData(Connection connection) {
-        this.connection = connection;
-    }
-
-    public void close() {
-        try {
-            connection.close();
-        } catch (SQLException e) {
-            DAOException.logException(e);
-        }
-    }
+    private final static Logger LOG = Logger.getLogger(MessagePoolData.class);
 
     @Override
     public void add(MessageOperation operation) throws DAOException {
@@ -73,7 +60,9 @@ public class MessagePoolData implements MessagePoolDAO {
         +               "contents, recipients, direct, status, username, retrycount) "
         +               "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
+
             ps.setString(1, operation.getId());
             ps.setTimestamp(2, new Timestamp(operation.getRegistration().getTime()));
             ps.setString(3, operation.getFromEmail());
@@ -88,7 +77,7 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.executeUpdate();
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
@@ -99,7 +88,9 @@ public class MessagePoolData implements MessagePoolDAO {
         +               "subject = ?, contents = ?, recipients = ?, direct = ?, "
         +               "status = ?, username = ?, retrycount = ? WHERE id = ?";
 
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
+
             ps.setTimestamp(1, new Timestamp(operation.getRegistration().getTime()));
             ps.setString(2, operation.getFromEmail());
             ps.setString(3, operation.getFromName());
@@ -114,7 +105,7 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.executeUpdate();
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
@@ -123,12 +114,14 @@ public class MessagePoolData implements MessagePoolDAO {
     public void remove(MessageOperation operation) throws DAOException {
         String query = "DELETE FROM MessagePool WHERE id=?";
 
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
+
             ps.setString(1, operation.getId());
             ps.execute();
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
@@ -137,7 +130,9 @@ public class MessagePoolData implements MessagePoolDAO {
     public List<MessageOperation> getPendingOperations() throws DAOException {
         String query = getSelect() + "WHERE status = ? OR STATUS = ? ORDER BY registration";
 
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
+
             ps.setString(1, OperationStatus.Queued.name());
             ps.setString(2, OperationStatus.Rescheduled.name());
 
@@ -149,7 +144,7 @@ public class MessagePoolData implements MessagePoolDAO {
             return operations;
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
@@ -160,7 +155,9 @@ public class MessagePoolData implements MessagePoolDAO {
         String query =  getSelect() + "WHERE registration < ? AND (status = ? OR status = ?)"
         +               "ORDER BY registration";
 
-        try (PreparedStatement ps = connection.prepareStatement(query)) {
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
+
             ps.setTimestamp(1, new Timestamp(date.getTime()));
             ps.setString(2, OperationStatus.Done.name());
             ps.setString(3, OperationStatus.Failed.name());
@@ -172,7 +169,7 @@ public class MessagePoolData implements MessagePoolDAO {
             return operations;
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }

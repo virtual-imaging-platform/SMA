@@ -35,6 +35,7 @@
 package fr.insalyon.creatis.sma.server.execution;
 
 import fr.insalyon.creatis.sma.common.Communication;
+import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 
 /**
  *
@@ -48,5 +49,5 @@ public abstract class Command {
         this.communication = communication;
     }
 
-    public abstract void execute();
+    public abstract void execute(MessagePoolBusiness poolBusiness);
 }

@@ -52,6 +52,4 @@ public interface MessagePoolDAO {
     public List<MessageOperation> getPendingOperations() throws DAOException;
     
     public List<MessageOperation> getOldOperations(Date date) throws DAOException;
-
-    public void close();
 }

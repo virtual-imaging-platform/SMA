@@ -36,64 +36,52 @@ import fr.insalyon.creatis.sma.common.bean.MessageOperation;
 import fr.insalyon.creatis.sma.common.bean.OperationStatus;
 import fr.insalyon.creatis.sma.server.business.BusinessException;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
-import fr.insalyon.creatis.sma.server.dao.DAOException;
-import fr.insalyon.creatis.sma.server.dao.H2Factory;
-import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
 import fr.insalyon.creatis.sma.server.utils.Configuration;
+
+import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 
-public class MessageExecutor {
+public class MessageExecutor implements Callable<Void> {
 
-    private static final Logger logger = Logger.getLogger(MessageExecutor.class);
+    private static final Logger LOG = Logger.getLogger(MessageExecutor.class);
     private final MessageOperation operation;
-    private MessagePoolDAO poolDAO;
+    private final MessagePoolBusiness poolBusiness;
 
-    public MessageExecutor(MessageOperation operation) {
+    public MessageExecutor(MessageOperation operation, MessagePoolBusiness messagePoolBusiness) {
         this.operation = operation;
+        this.poolBusiness = messagePoolBusiness;
     }
 
-    public void send() {
-        logger.info("[MessagePool] Processing operation '" + operation.getId() + "'.");
+    @Override
+    public Void call() throws Exception {
+        LOG.info("[MessagePool] Processing operation '" + operation.getId() + "'.");
 
         try {
-            poolDAO = H2Factory.getInstance().getMessagePoolDAO();
 
-            updateStatus(operation, OperationStatus.Running);
-            new MessagePoolBusiness().sendEmail(
+            poolBusiness.updateStatus(operation, OperationStatus.Running);
+            poolBusiness.sendEmail(
                     operation.getFromEmail(), 
                     operation.getFromName(), 
                     operation.getSubject(), 
                     operation.getContents(), 
                     operation.getRecipients(), 
                     operation.isDirect());
-            updateStatus(operation, OperationStatus.Done);
+            poolBusiness.updateStatus(operation, OperationStatus.Done);
 
-        } catch (DAOException | BusinessException ex) {
-            logger.error(ex);
+        } catch (BusinessException ex) {
+            LOG.error(ex);
             retry();
-        } finally {
-            poolDAO.close();
         }
+        return null;
     }
 
-    public void retry() {
-        try {
-            if (operation.getRetryCount() == Configuration.getInstance().getMaxRetryCount()) {
-                updateStatus(operation, OperationStatus.Failed);
-            } else {
-                operation.incrementRetryCount();
-                updateStatus(operation, OperationStatus.Rescheduled);
-            }
-        } catch (DAOException ex) {
-            logger.warn("Failed to retry message task !");
-        }
-    }
-
-    private void updateStatus(MessageOperation operation, OperationStatus status) throws DAOException {
-        if (poolDAO != null) {
-            operation.setStatus(status);
-            poolDAO.update(operation);
+    public void retry() throws BusinessException {
+        if (operation.getRetryCount() == Configuration.getInstance().getMaxRetryCount()) {
+            poolBusiness.updateStatus(operation, OperationStatus.Failed);
+        } else {
+            operation.incrementRetryCount();
+            poolBusiness.updateStatus(operation, OperationStatus.Rescheduled);
         }
     }
 }

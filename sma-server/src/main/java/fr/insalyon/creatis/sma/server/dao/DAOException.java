@@ -34,26 +34,13 @@
  */
 package fr.insalyon.creatis.sma.server.dao;
 
-import org.apache.log4j.Logger;
-
 /**
  *
  * @author Rafael Ferreira da Silva
  */
 public class DAOException extends Exception {
 
-    private static final Logger logger = Logger.getLogger(H2Factory.class);
-
     public DAOException(Throwable throwable) {
         super(throwable);
-    }
-
-    public static void logException(Exception ex) {
-        logger.error(ex);
-        if (logger.isDebugEnabled()) {
-            for (StackTraceElement stack : ex.getStackTrace()) {
-                logger.debug(stack);
-            }
-        }
     }
 }

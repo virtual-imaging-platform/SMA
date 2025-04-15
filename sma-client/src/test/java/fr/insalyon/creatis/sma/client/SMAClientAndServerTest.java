@@ -42,7 +42,7 @@ public class SMAClientAndServerTest {
         when(configuration.getMailProtocol()).thenReturn(server.getProtocol());
         when(configuration.getMailHost()).thenReturn(server.getBindTo());
         when(configuration.getMailPort()).thenReturn(server.getPort());
-        when(configuration.getMailSslTrust()).thenReturn(server.getBindTo());
+        when(configuration.isMailSslTrust()).thenReturn(false);
 
         when(configuration.isMailAuth()).thenReturn(false);
         when(configuration.getMailUsername()).thenReturn("");

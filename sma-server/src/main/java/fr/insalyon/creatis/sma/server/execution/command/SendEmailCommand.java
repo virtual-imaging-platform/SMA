@@ -65,13 +65,13 @@ public class SendEmailCommand extends Command {
     }
 
     @Override
-    public void execute() {
+    public void execute(MessagePoolBusiness poolBusiness) {
         try {
             MessageOperation operation = new MessageOperation(
                     Configuration.getInstance().getMailFrom(),
                     Configuration.getInstance().getMailFromName(),
                     subject, contents, recipients, direct, username);
-            new MessagePoolBusiness().addOperation(operation);
+            poolBusiness.addOperation(operation);
             
             communication.sendMessage(operation.getId());
             communication.sendSucessMessage();

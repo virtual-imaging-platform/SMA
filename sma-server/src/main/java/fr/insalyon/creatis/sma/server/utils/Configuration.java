@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
  */
 public class Configuration {
 
-    private static final Logger logger = Logger.getLogger(Configuration.class);
+    private static final Logger LOG = Logger.getLogger(Configuration.class);
     private static Configuration instance;
     private static final String confFile = "sma-server.conf";
     // General
@@ -52,8 +52,8 @@ public class Configuration {
     private int maxRetryCount;
     private int mailPort;
     private boolean mailAuth;
+    private boolean mailSslTrust;
     private String mailHost;
-    private String mailSslTrust;
     private String mailUsername;
     private String mailPassword;
     private String mailProtocol;
@@ -74,7 +74,7 @@ public class Configuration {
 
     private Configuration() {
         try {
-            logger.info("Loading configuration file.");
+            LOG.info("Loading configuration file.");
             PropertiesConfiguration config = new PropertiesConfiguration(new File(confFile));
 
             port = config.getInt(Constants.LAB_AGENT_PORT, 8082);
@@ -84,7 +84,7 @@ public class Configuration {
             maxHistory = config.getInt(Constants.LAB_AGENT_MAX_HISTORY, 90);
             maxRetryCount = config.getInt(Constants.LAB_AGENT_RETRYCOUNT, 5);
             mailHost = config.getString(Constants.LAB_MAIL_HOST, "smtp.localhost");
-            mailSslTrust = config.getString(Constants.LAB_MAIL_SSL_TRUST, "");
+            mailSslTrust = config.getBoolean(Constants.LAB_MAIL_SSL_TRUST, false);
             mailPort = config.getInt(Constants.LAB_MAIL_PORT, 25);
             mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
             mailFrom = config.getString(Constants.LAB_MAIL_FROM, "example@example.com");
@@ -111,7 +111,7 @@ public class Configuration {
             config.save();
 
         } catch (ConfigurationException ex) {
-            logger.error(ex);
+            LOG.error(ex);
         }
     }
 
@@ -135,7 +135,7 @@ public class Configuration {
         return mailHost;
     }
 
-    public String getMailSslTrust() {
+    public boolean isMailSslTrust() {
         return mailSslTrust;
     }
 

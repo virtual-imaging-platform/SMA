@@ -13,19 +13,20 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import fr.insalyon.creatis.sma.common.Communication;
-import fr.insalyon.creatis.sma.server.execution.ScheduledTasks;
+import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
+import fr.insalyon.creatis.sma.server.dao.h2.MessagePoolData;
+import fr.insalyon.creatis.sma.server.execution.ScheduledTasksCreator;
 import fr.insalyon.creatis.sma.server.execution.executors.CommunicationExecutor;
 import fr.insalyon.creatis.sma.server.utils.Configuration;
 import fr.insalyon.creatis.sma.server.utils.Constants;
 
 public class SmaServer extends Thread {
 
-    private static final Logger logger = Logger.getLogger(Main.class);
+    private static final Logger LOG = Logger.getLogger(Main.class);
 
-    private final ScheduledExecutorService scheduledExecutorService;
-    private final ExecutorService fastExecutor;
-    private final ExecutorService longExecutor;
-    private final ScheduledTasks tasks;
+    private final ScheduledExecutorService tasksExecutor;
+    private final ExecutorService socketExecutor;
+    private final ExecutorService sendMessageExecutor;
     private final Configuration config;
     private boolean started = false;
 
@@ -33,11 +34,9 @@ public class SmaServer extends Thread {
         PropertyConfigurator.configure(Main.class.getClassLoader().getResource("smaLog4j.properties"));
 
         config = Configuration.getInstance();
-        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        fastExecutor = Executors.newCachedThreadPool();
-        longExecutor = Executors.newFixedThreadPool(config.getMailMaxRuns());
-
-        tasks = new ScheduledTasks(longExecutor);
+        tasksExecutor = Executors.newSingleThreadScheduledExecutor();
+        socketExecutor = Executors.newCachedThreadPool();
+        sendMessageExecutor = Executors.newFixedThreadPool(config.getMailMaxRuns());
 
         schedule();
     }
@@ -49,15 +48,16 @@ public class SmaServer extends Thread {
     }
 
     public void schedule() {
-        scheduledExecutorService.scheduleWithFixedDelay(
-            () -> tasks.messagePoolCleaner(), 0, Constants.CLEANER_POOL_SLEEP_HOURS, TimeUnit.HOURS);
-        scheduledExecutorService.scheduleWithFixedDelay(
-            () -> tasks.messagePool(), 0, Constants.MESSAGE_POOL_SLEEP_SECONDS, TimeUnit.SECONDS);
+        ScheduledTasksCreator creator = new ScheduledTasksCreator(new MessagePoolData());
+
+        tasksExecutor.scheduleWithFixedDelay(creator.getPoolCleanerTask(), 0, Constants.CLEANER_POOL_SLEEP_HOURS, TimeUnit.HOURS);
+        tasksExecutor.scheduleWithFixedDelay(creator.getMessagePoolTask(sendMessageExecutor), 0,  Constants.MESSAGE_POOL_SLEEP_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
     public void run() {
-        logger.info("Starting SMA Server on port " + config.getPort());
+        final MessagePoolBusiness poolBusiness = new MessagePoolBusiness(new MessagePoolData());
+        LOG.info("Starting SMA Server on port " + config.getPort());
 
         try (ServerSocket serverSocket = new ServerSocket(config.getPort(), 50, InetAddress.getByName("0.0.0.0"))) {
             started = true;
@@ -66,10 +66,10 @@ public class SmaServer extends Thread {
                 Socket socket = serverSocket.accept();
                 Communication communication = new Communication(socket);
 
-                fastExecutor.submit(new CommunicationExecutor(communication));
+                socketExecutor.submit(new CommunicationExecutor(communication, poolBusiness));
             }
         } catch (IOException ex) {
-            logger.error("Error processing a request ", ex);
+            LOG.error("Error processing a request ", ex);
         }
     }
 }

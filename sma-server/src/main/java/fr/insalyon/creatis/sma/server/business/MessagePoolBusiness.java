@@ -35,8 +35,8 @@
 package fr.insalyon.creatis.sma.server.business;
 
 import fr.insalyon.creatis.sma.common.bean.MessageOperation;
+import fr.insalyon.creatis.sma.common.bean.OperationStatus;
 import fr.insalyon.creatis.sma.server.dao.DAOException;
-import fr.insalyon.creatis.sma.server.dao.H2Factory;
 import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
 import fr.insalyon.creatis.sma.server.utils.Configuration;
 
@@ -57,17 +57,29 @@ import org.apache.log4j.Logger;
  */
 public class MessagePoolBusiness {
 
-    private final static Logger logger = Logger.getLogger(MessagePoolBusiness.class);
+    private final static Logger LOG = Logger.getLogger(MessagePoolBusiness.class);
+    private final MessagePoolDAO messagePoolDAO;
+
+    public MessagePoolBusiness(MessagePoolDAO messagePoolDAO) {
+        this.messagePoolDAO = messagePoolDAO;
+    }
 
     public void addOperation(MessageOperation operation) throws BusinessException {
         try {
-            MessagePoolDAO poolDAO = H2Factory.getInstance().getMessagePoolDAO();
+            messagePoolDAO.add(operation);
 
-            poolDAO.add(operation);
-            poolDAO.close();
+        } catch (DAOException e) {
+            throw new BusinessException(e);
+        }
+    }
 
-        } catch (DAOException ex) {
-            throw new BusinessException(ex);
+    public void updateStatus(MessageOperation operation, OperationStatus status) throws BusinessException {
+        try {
+            operation.setStatus(status);
+            messagePoolDAO.update(operation);
+
+        } catch (DAOException e){
+            throw new BusinessException(e);
         }
     }
 
@@ -75,7 +87,7 @@ public class MessagePoolBusiness {
             String content, String[] recipients, boolean direct) throws BusinessException {
         // see https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html 
         try {
-            logger.info("Sending email to: " + String.join(" ", recipients));
+            LOG.info("Sending email to: " + String.join(" ", recipients));
             Configuration conf = Configuration.getInstance();
             Properties props = new Properties();
             props.setProperty("mail.transport.protocol", conf.getMailProtocol());
@@ -84,8 +96,8 @@ public class MessagePoolBusiness {
             props.setProperty("mail.smtp.auth", String.valueOf(conf.isMailAuth()));
             props.setProperty("mail.smtp.starttls.enable", String.valueOf(conf.isMailAuth()));
 
-            if ( ! conf.getMailSslTrust().isBlank()) {
-                props.setProperty("mail.smtp.ssl.trust", conf.getMailSslTrust());
+            if (conf.isMailSslTrust()) {
+                props.setProperty("mail.smtp.ssl.trust", conf.getMailHost());
             }
             
             Session session = Session.getDefaultInstance(props);
@@ -128,10 +140,10 @@ public class MessagePoolBusiness {
                 transport.close();
 
             } else {
-                logger.warn("There's no recipients to send the email.");
+                LOG.warn("There's no recipients to send the email.");
             }
         } catch (UnsupportedEncodingException | MessagingException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new BusinessException(ex);
         }
     }
