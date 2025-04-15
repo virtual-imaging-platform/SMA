@@ -36,6 +36,7 @@ import fr.insalyon.creatis.sma.common.bean.MessageOperation;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 import fr.insalyon.creatis.sma.server.dao.DAOException;
 import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
+import fr.insalyon.creatis.sma.server.dao.h2.MessagePoolData;
 import fr.insalyon.creatis.sma.server.execution.executors.MessageExecutor;
 import fr.insalyon.creatis.sma.server.utils.Configuration;
 import fr.insalyon.creatis.sma.server.utils.Constants;
@@ -50,21 +51,22 @@ import org.apache.log4j.Logger;
 public class ScheduledTasksCreator {
 
     private static final Logger LOG = Logger.getLogger(ScheduledTasksCreator.class);
-    private final MessagePoolDAO messagePoolDAO;
 
-    public ScheduledTasksCreator(MessagePoolDAO messagePoolDAO) {
-        this.messagePoolDAO = messagePoolDAO;
+    public PoolCleaner getPoolCleanerTask(MessagePoolData messagePoolData) {
+        return new PoolCleaner(messagePoolData);
     }
 
-    public PoolCleaner getPoolCleanerTask() {
-        return new PoolCleaner();
+    public MessagePool getMessagePoolTask(ExecutorService executorService, MessagePoolDAO messagePoolDAO, MessagePoolBusiness messagePoolBusiness) {
+        return new MessagePool(executorService, messagePoolDAO, messagePoolBusiness);
     }
 
-    public MessagePool getMessagePoolTask(ExecutorService executorService) {
-        return new MessagePool(executorService);
-    }
+    public static class PoolCleaner implements Runnable {
+        private final MessagePoolDAO messagePoolDAO;
 
-    public class PoolCleaner implements Runnable {
+        public PoolCleaner(MessagePoolDAO messagePoolDAO) {
+            this.messagePoolDAO = messagePoolDAO;
+        }
+
         @Override
         public void run() {
             LOG.info("Running Message Cleaner Pool");
@@ -88,18 +90,20 @@ public class ScheduledTasksCreator {
         }
     }
 
-    public class MessagePool implements Runnable {
+    public static class MessagePool implements Runnable {
         private final ExecutorService executor;
+        private final MessagePoolDAO messagePoolDAO;
+        private final MessagePoolBusiness messagePoolBusiness;
 
-        public MessagePool(ExecutorService executorService) {
+        public MessagePool(ExecutorService executorService, MessagePoolDAO messagePoolDAO, MessagePoolBusiness messagePoolBusiness) {
             this.executor = executorService;
+            this.messagePoolDAO = messagePoolDAO;
+            this.messagePoolBusiness = messagePoolBusiness;
         }
 
         @Override
         public void run() {
             try {
-                final MessagePoolBusiness messagePoolBusiness = new MessagePoolBusiness(messagePoolDAO);
-
                 List<MessageExecutor> callablesOperations = messagePoolDAO.getPendingOperations().stream()
                     .map(op -> new MessageExecutor(op, messagePoolBusiness)).toList();
     

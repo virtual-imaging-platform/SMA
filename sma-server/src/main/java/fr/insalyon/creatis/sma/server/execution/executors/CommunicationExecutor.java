@@ -66,7 +66,7 @@ public class CommunicationExecutor extends Thread {
                 Command command = parseCommand(message);
 
                 if (command != null) {
-                    command.execute(poolBusiness);
+                    command.execute();
                 }
             } else {
                 logException(new Exception("Error during message receive: " + message));
@@ -90,7 +90,7 @@ public class CommunicationExecutor extends Thread {
             switch (command) {
 
                 case ExecutorConstants.MESSAGEPOOL_ADD_OPERATION:
-                    return new SendEmailCommand(communication, tk[1], tk[2], tk[3], tk[4], tk[5]);
+                    return new SendEmailCommand(communication, tk[1], tk[2], tk[3], tk[4], tk[5], poolBusiness);
 
                 default:
                     logException(new Exception("Command not recognized: " + message));

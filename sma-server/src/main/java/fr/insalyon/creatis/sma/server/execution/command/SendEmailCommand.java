@@ -47,14 +47,16 @@ import fr.insalyon.creatis.sma.server.utils.Configuration;
  */
 public class SendEmailCommand extends Command {
 
-    private String subject;
-    private String contents;
-    private String recipients;
-    private boolean direct;
-    private String username;
+    private final String subject;
+    private final String contents;
+    private final String recipients;
+    private final boolean direct;
+    private final String username;
+    private final MessagePoolBusiness poolBusiness;
 
     public SendEmailCommand(Communication communication, String subject,
-            String contents, String recipients, String direct, String username) {
+            String contents, String recipients, String direct, String username,
+            MessagePoolBusiness poolBusiness) {
 
         super(communication);
         this.subject = subject;
@@ -62,10 +64,11 @@ public class SendEmailCommand extends Command {
         this.recipients = recipients;
         this.direct = Boolean.valueOf(direct);
         this.username = username;
+        this.poolBusiness = poolBusiness;
     }
 
     @Override
-    public void execute(MessagePoolBusiness poolBusiness) {
+    public void execute() {
         try {
             MessageOperation operation = new MessageOperation(
                     Configuration.getInstance().getMailFrom(),

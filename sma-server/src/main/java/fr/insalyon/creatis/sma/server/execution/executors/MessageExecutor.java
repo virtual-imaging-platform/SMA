@@ -37,7 +37,16 @@ import fr.insalyon.creatis.sma.common.bean.OperationStatus;
 import fr.insalyon.creatis.sma.server.business.BusinessException;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 import fr.insalyon.creatis.sma.server.utils.Configuration;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
@@ -58,9 +67,8 @@ public class MessageExecutor implements Callable<Void> {
         LOG.info("[MessagePool] Processing operation '" + operation.getId() + "'.");
 
         try {
-
             poolBusiness.updateStatus(operation, OperationStatus.Running);
-            poolBusiness.sendEmail(
+            sendEmail(
                     operation.getFromEmail(), 
                     operation.getFromName(), 
                     operation.getSubject(), 
@@ -74,6 +82,71 @@ public class MessageExecutor implements Callable<Void> {
             retry();
         }
         return null;
+    }
+
+    public void sendEmail(String ownerEmail, String owner, String subject,
+            String content, String[] recipients, boolean direct) throws BusinessException {
+        // see https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html 
+        try {
+            LOG.info("Sending email to: " + String.join(" ", recipients));
+            Configuration conf = Configuration.getInstance();
+            Properties props = new Properties();
+            props.setProperty("mail.transport.protocol", conf.getMailProtocol());
+            props.setProperty("mail.smtp.host", conf.getMailHost());
+            props.setProperty("mail.smtp.port", String.valueOf(conf.getMailPort()));
+            props.setProperty("mail.smtp.auth", String.valueOf(conf.isMailAuth()));
+            props.setProperty("mail.smtp.starttls.enable", String.valueOf(conf.isMailAuth()));
+
+            if (conf.isMailSslTrust()) {
+                props.setProperty("mail.smtp.ssl.trust", conf.getMailHost());
+            }
+            
+            Session session = Session.getDefaultInstance(props);
+            session.setDebug(false);
+
+            MimeMessage mimeMessage = new MimeMessage(session);
+            mimeMessage.setContent(content, "text/html");
+            mimeMessage.addHeader("Content-Type", "text/html");
+
+            InternetAddress from = new InternetAddress(ownerEmail, owner);
+            mimeMessage.setReplyTo(new InternetAddress[]{from});
+            mimeMessage.setFrom(from);
+            mimeMessage.setSentDate(new Date());
+            mimeMessage.setSubject(subject);
+
+            Transport transport = session.getTransport();
+
+            if (conf.isMailAuth()) {
+                transport.connect(
+                    conf.getMailHost(), conf.getMailPort(),
+                    conf.getMailUsername(), conf.getMailPassword());
+            } else {
+                transport.connect();
+            }
+
+            InternetAddress[] addressTo = null;
+
+            if (recipients != null && recipients.length > 0) {
+                addressTo = new InternetAddress[recipients.length];
+                for (int i = 0; i < recipients.length; i++) {
+                    addressTo[i] = new InternetAddress(recipients[i]);
+                }
+                if (direct) {
+                    mimeMessage.setRecipients(Message.RecipientType.TO, addressTo);
+                } else {
+                    mimeMessage.setRecipients(Message.RecipientType.BCC, addressTo);
+                }
+
+                transport.sendMessage(mimeMessage, addressTo);
+                transport.close();
+
+            } else {
+                LOG.warn("There's no recipients to send the email.");
+            }
+        } catch (UnsupportedEncodingException | MessagingException ex) {
+            LOG.error(ex);
+            throw new BusinessException(ex);
+        }
     }
 
     public void retry() throws BusinessException {

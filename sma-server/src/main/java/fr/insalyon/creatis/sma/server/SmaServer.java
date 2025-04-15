@@ -28,6 +28,9 @@ public class SmaServer extends Thread {
     private final ExecutorService socketExecutor;
     private final ExecutorService sendMessageExecutor;
     private final Configuration config;
+
+    private final MessagePoolData messagePoolData;
+    private final MessagePoolBusiness messagePoolBusiness;
     private boolean started = false;
 
     public SmaServer() {
@@ -37,6 +40,9 @@ public class SmaServer extends Thread {
         tasksExecutor = Executors.newSingleThreadScheduledExecutor();
         socketExecutor = Executors.newCachedThreadPool();
         sendMessageExecutor = Executors.newFixedThreadPool(config.getMailMaxRuns());
+
+        messagePoolData = new MessagePoolData();
+        messagePoolBusiness = new MessagePoolBusiness(messagePoolData);
 
         schedule();
     }
@@ -48,15 +54,16 @@ public class SmaServer extends Thread {
     }
 
     public void schedule() {
-        ScheduledTasksCreator creator = new ScheduledTasksCreator(new MessagePoolData());
+        ScheduledTasksCreator creator = new ScheduledTasksCreator();
 
-        tasksExecutor.scheduleWithFixedDelay(creator.getPoolCleanerTask(), 0, Constants.CLEANER_POOL_SLEEP_HOURS, TimeUnit.HOURS);
-        tasksExecutor.scheduleWithFixedDelay(creator.getMessagePoolTask(sendMessageExecutor), 0,  Constants.MESSAGE_POOL_SLEEP_SECONDS, TimeUnit.SECONDS);
+        tasksExecutor.scheduleWithFixedDelay(
+            creator.getPoolCleanerTask(messagePoolData), 0, Constants.CLEANER_POOL_SLEEP_HOURS, TimeUnit.HOURS);
+        tasksExecutor.scheduleWithFixedDelay(
+            creator.getMessagePoolTask(sendMessageExecutor, messagePoolData, messagePoolBusiness), 0,  Constants.MESSAGE_POOL_SLEEP_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
     public void run() {
-        final MessagePoolBusiness poolBusiness = new MessagePoolBusiness(new MessagePoolData());
         LOG.info("Starting SMA Server on port " + config.getPort());
 
         try (ServerSocket serverSocket = new ServerSocket(config.getPort(), 50, InetAddress.getByName("0.0.0.0"))) {
@@ -66,7 +73,7 @@ public class SmaServer extends Thread {
                 Socket socket = serverSocket.accept();
                 Communication communication = new Communication(socket);
 
-                socketExecutor.submit(new CommunicationExecutor(communication, poolBusiness));
+                socketExecutor.submit(new CommunicationExecutor(communication, messagePoolBusiness));
             }
         } catch (IOException ex) {
             LOG.error("Error processing a request ", ex);
