@@ -62,14 +62,13 @@ public class Configuration {
     private int mailMaxRuns;
 
     public static Configuration getInstance() {
-
         if (instance == null) {
             instance = new Configuration();
         }
         return instance;
     }
 
-    public void setConfiguration(Configuration config) {
+    public static void setConfiguration(Configuration config) {
         instance = config;
     }
 

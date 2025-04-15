@@ -53,7 +53,7 @@ public class SMAClientAndServerTest {
         when(configuration.getMailMaxRuns()).thenReturn(5);
 
 
-        Configuration.getInstance().setConfiguration(configuration);
+        Configuration.setConfiguration(configuration);
     }
 
     @BeforeEach
