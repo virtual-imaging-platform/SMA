@@ -74,43 +74,29 @@ public class Configuration {
     }
 
     private Configuration() {
+        File configurationFile = new File(confFile);
+        logger.info("Loading configuration file.");
+
         try {
-            logger.info("Loading configuration file.");
-            PropertiesConfiguration config = new PropertiesConfiguration(new File(confFile));
+            if (configurationFile.exists()) {
+                PropertiesConfiguration config = new PropertiesConfiguration(configurationFile);
 
-            port = config.getInt(Constants.LAB_AGENT_PORT, 8082);
-            mailAuth = config.getBoolean(Constants.LAB_MAIL_AUTH, false);
-            mailUsername = config.getString(Constants.LAB_MAIL_USERNAME, "default");
-            mailPassword = config.getString(Constants.LAB_MAIL_PASSWORD, "password");
-            maxHistory = config.getInt(Constants.LAB_AGENT_MAX_HISTORY, 90);
-            maxRetryCount = config.getInt(Constants.LAB_AGENT_RETRYCOUNT, 5);
-            mailHost = config.getString(Constants.LAB_MAIL_HOST, "smtp.localhost");
-            mailSslTrust = config.getString(Constants.LAB_MAIL_SSL_TRUST, "");
-            mailPort = config.getInt(Constants.LAB_MAIL_PORT, 25);
-            mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
-            mailFrom = config.getString(Constants.LAB_MAIL_FROM, "example@example.com");
-            mailFromName = config.getString(Constants.LAB_MAIL_FROM_NAME, "Example");
-            mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 5);
-
-            config.setProperty(Constants.LAB_AGENT_PORT, port);
-            config.setProperty(Constants.LAB_AGENT_RETRYCOUNT, maxRetryCount);
-            config.setProperty(Constants.LAB_AGENT_MAX_HISTORY, maxHistory);
-
-            config.setProperty(Constants.LAB_MAIL_PROTOCOL, mailProtocol);
-            config.setProperty(Constants.LAB_MAIL_HOST, mailHost);
-            config.setProperty(Constants.LAB_MAIL_PORT, mailPort);
-            config.setProperty(Constants.LAB_MAIL_SSL_TRUST, mailSslTrust);
-
-            config.setProperty(Constants.LAB_MAIL_AUTH, mailAuth);
-            config.setProperty(Constants.LAB_MAIL_USERNAME, mailUsername);
-            config.setProperty(Constants.LAB_MAIL_PASSWORD, mailPassword);
-
-            config.setProperty(Constants.LAB_MAIL_FROM, mailFrom);
-            config.setProperty(Constants.LAB_MAIL_FROM_NAME, mailFromName);
-            config.setProperty(Constants.LAB_MAIL_MAX_RUNS, mailMaxRuns);
-
-            config.save();
-
+                port = config.getInt(Constants.LAB_AGENT_PORT, 8082);
+                mailAuth = config.getBoolean(Constants.LAB_MAIL_AUTH, false);
+                mailUsername = config.getString(Constants.LAB_MAIL_USERNAME, "default");
+                mailPassword = config.getString(Constants.LAB_MAIL_PASSWORD, "password");
+                maxHistory = config.getInt(Constants.LAB_AGENT_MAX_HISTORY, 90);
+                maxRetryCount = config.getInt(Constants.LAB_AGENT_RETRYCOUNT, 5);
+                mailHost = config.getString(Constants.LAB_MAIL_HOST, "smtp.localhost");
+                mailSslTrust = config.getString(Constants.LAB_MAIL_SSL_TRUST, "");
+                mailPort = config.getInt(Constants.LAB_MAIL_PORT, 25);
+                mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
+                mailFrom = config.getString(Constants.LAB_MAIL_FROM, "example@example.com");
+                mailFromName = config.getString(Constants.LAB_MAIL_FROM_NAME, "Example");
+                mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 5);
+            } else {
+                throw new IllegalStateException("Configuration file must be present!");
+            }
         } catch (ConfigurationException ex) {
             logger.error(ex);
         }
