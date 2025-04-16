@@ -36,7 +36,6 @@ import fr.insalyon.creatis.sma.common.bean.MessageOperation;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 import fr.insalyon.creatis.sma.server.dao.DAOException;
 import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
-import fr.insalyon.creatis.sma.server.dao.h2.MessagePoolData;
 import fr.insalyon.creatis.sma.server.execution.executors.MessageExecutor;
 import fr.insalyon.creatis.sma.server.utils.Configuration;
 import fr.insalyon.creatis.sma.server.utils.Constants;
@@ -52,8 +51,8 @@ public class ScheduledTasksCreator {
 
     private static final Logger LOG = Logger.getLogger(ScheduledTasksCreator.class);
 
-    public PoolCleaner getPoolCleanerTask(MessagePoolData messagePoolData) {
-        return new PoolCleaner(messagePoolData);
+    public PoolCleaner getPoolCleanerTask(MessagePoolDAO messagePoolDAO) {
+        return new PoolCleaner(messagePoolDAO);
     }
 
     public MessagePool getMessagePoolTask(ExecutorService executorService, MessagePoolDAO messagePoolDAO, MessagePoolBusiness messagePoolBusiness) {

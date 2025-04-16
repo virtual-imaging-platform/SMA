@@ -14,6 +14,7 @@ import org.apache.log4j.PropertyConfigurator;
 
 import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
+import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
 import fr.insalyon.creatis.sma.server.dao.h2.MessagePoolData;
 import fr.insalyon.creatis.sma.server.execution.ScheduledTasksCreator;
 import fr.insalyon.creatis.sma.server.execution.executors.CommunicationExecutor;
@@ -29,7 +30,7 @@ public class SmaServer extends Thread {
     private final ExecutorService sendMessageExecutor;
     private final Configuration config;
 
-    private final MessagePoolData messagePoolData;
+    private final MessagePoolDAO messagePoolDAO;
     private final MessagePoolBusiness messagePoolBusiness;
     private boolean started = false;
 
@@ -41,8 +42,8 @@ public class SmaServer extends Thread {
         socketExecutor = Executors.newCachedThreadPool();
         sendMessageExecutor = Executors.newFixedThreadPool(config.getMailMaxRuns());
 
-        messagePoolData = new MessagePoolData();
-        messagePoolBusiness = new MessagePoolBusiness(messagePoolData);
+        messagePoolDAO = new MessagePoolData();
+        messagePoolBusiness = new MessagePoolBusiness(messagePoolDAO);
 
         schedule();
     }
@@ -53,13 +54,13 @@ public class SmaServer extends Thread {
         }
     }
 
-    public void schedule() {
+    public final void schedule() {
         ScheduledTasksCreator creator = new ScheduledTasksCreator();
 
         tasksExecutor.scheduleWithFixedDelay(
-            creator.getPoolCleanerTask(messagePoolData), 0, Constants.CLEANER_POOL_SLEEP_HOURS, TimeUnit.HOURS);
+            creator.getPoolCleanerTask(messagePoolDAO), 0, Constants.CLEANER_POOL_SLEEP_HOURS, TimeUnit.HOURS);
         tasksExecutor.scheduleWithFixedDelay(
-            creator.getMessagePoolTask(sendMessageExecutor, messagePoolData, messagePoolBusiness), 0,  Constants.MESSAGE_POOL_SLEEP_SECONDS, TimeUnit.SECONDS);
+            creator.getMessagePoolTask(sendMessageExecutor, messagePoolDAO, messagePoolBusiness), 0,  Constants.MESSAGE_POOL_SLEEP_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
