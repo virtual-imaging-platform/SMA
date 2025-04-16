@@ -53,7 +53,7 @@ public class SMAClientAndServerTest {
         when(configuration.getMailMaxRuns()).thenReturn(10);
         when(configuration.getMailPort()).thenReturn(server.getPort());
 
-        Configuration.getInstance().setConfiguration(configuration);
+        Configuration.setConfiguration(configuration);
     }
 
     @BeforeEach
