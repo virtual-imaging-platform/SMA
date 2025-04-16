@@ -19,8 +19,8 @@ import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 
-import fr.insalyon.creatis.sma.server.Configuration;
 import fr.insalyon.creatis.sma.server.SmaServer;
+import fr.insalyon.creatis.sma.server.utils.Configuration;
 import jakarta.mail.internet.MimeMessage;
 
 public class SMAClientAndServerTest {
@@ -42,7 +42,7 @@ public class SMAClientAndServerTest {
         when(configuration.getMailProtocol()).thenReturn(server.getProtocol());
         when(configuration.getMailHost()).thenReturn(server.getBindTo());
         when(configuration.getMailPort()).thenReturn(server.getPort());
-        when(configuration.getMailSslTrust()).thenReturn(server.getBindTo());
+        when(configuration.isMailSslTrust()).thenReturn(false);
 
         when(configuration.isMailAuth()).thenReturn(false);
         when(configuration.getMailUsername()).thenReturn("");
@@ -50,8 +50,8 @@ public class SMAClientAndServerTest {
 
         when(configuration.getMailFrom()).thenReturn("test@test.com");
         when(configuration.getMailFromName()).thenReturn("test");
-        when(configuration.getMailMaxRuns()).thenReturn(5);
-
+        when(configuration.getMailMaxRuns()).thenReturn(10);
+        when(configuration.getMailPort()).thenReturn(server.getPort());
 
         Configuration.getInstance().setConfiguration(configuration);
     }
@@ -79,10 +79,11 @@ public class SMAClientAndServerTest {
         final String message = "je suis vraiment trop fort";
         final String subject = "wow ce titre est incroyable";
         final String username = "bliblou";
+        final int nmails = 1000;
         String[] randomAddress;
         client = new SMAClient(InetAddress.getLocalHost(), configuration.getPort());
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < nmails; i++) {
             randomAddress = generateRandomAddress();
             client.sendEmail(subject, message, randomAddress, true, username);
             System.err.println("Sending mail to : " + randomAddress[0]);
@@ -90,11 +91,11 @@ public class SMAClientAndServerTest {
 
         before = Instant.now();
         System.err.println("Waiting for mails to reach de server !");
-        while (mailServer.getReceivedMessages().length != 1000) {
-            System.err.println("Waiting !");
+        while (mailServer.getReceivedMessages().length != nmails) {
+            System.err.println("Waiting ! (" + mailServer.getReceivedMessages().length + " mails arrived)");
             Thread.sleep(1000);
             after = Instant.now();
-            assertFalse(Duration.between(before, after).toMillis() > Constants.MAX_WAIT_SPAM);
+            assertFalse(Duration.between(before, after).toSeconds() > Constants.MAX_WAIT_SPAM_SEC);
         }
         System.err.println("All mails sended !");
 

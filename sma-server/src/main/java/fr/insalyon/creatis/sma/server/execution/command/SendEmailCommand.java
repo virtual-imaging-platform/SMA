@@ -36,10 +36,10 @@ package fr.insalyon.creatis.sma.server.execution.command;
 
 import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.common.bean.MessageOperation;
-import fr.insalyon.creatis.sma.server.Configuration;
 import fr.insalyon.creatis.sma.server.business.BusinessException;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 import fr.insalyon.creatis.sma.server.execution.Command;
+import fr.insalyon.creatis.sma.server.utils.Configuration;
 
 /**
  *
@@ -47,14 +47,15 @@ import fr.insalyon.creatis.sma.server.execution.Command;
  */
 public class SendEmailCommand extends Command {
 
-    private String subject;
-    private String contents;
-    private String recipients;
-    private boolean direct;
-    private String username;
+    private final String subject;
+    private final String contents;
+    private final String recipients;
+    private final boolean direct;
+    private final String username;
+    private final MessagePoolBusiness poolBusiness;
 
-    public SendEmailCommand(Communication communication, String subject,
-            String contents, String recipients, String direct, String username) {
+    public SendEmailCommand(Communication communication, MessagePoolBusiness poolBusiness,
+            String subject, String contents, String recipients, String direct, String username) {
 
         super(communication);
         this.subject = subject;
@@ -62,6 +63,7 @@ public class SendEmailCommand extends Command {
         this.recipients = recipients;
         this.direct = Boolean.valueOf(direct);
         this.username = username;
+        this.poolBusiness = poolBusiness;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class SendEmailCommand extends Command {
                     Configuration.getInstance().getMailFrom(),
                     Configuration.getInstance().getMailFromName(),
                     subject, contents, recipients, direct, username);
-            new MessagePoolBusiness().addOperation(operation);
+            poolBusiness.addOperation(operation);
             
             communication.sendMessage(operation.getId());
             communication.sendSucessMessage();

@@ -4,8 +4,6 @@
  * rafael.silva@creatis.insa-lyon.fr
  * http://www.rafaelsilva.com
  *
- * This software is a grid-enabled data-driven workflow manager and editor.
- *
  * This software is governed by the CeCILL  license under French law and
  * abiding by the rules of distribution of free software.  You can  use,
  * modify and/ or redistribute the software under the terms of the CeCILL
@@ -32,35 +30,31 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package fr.insalyon.creatis.sma.server.dao;
+package fr.insalyon.creatis.sma.server.utils;
 
 /**
  *
  * @author Rafael Ferreira da Silva
  */
-public abstract class DAOFactory {
+public class Constants {
 
-    private static final int H2 = 1;
-    private static int factory = H2;
+    public static final String LAB_AGENT_MAX_HISTORY = "sma.max.history";
+    public static final String LAB_AGENT_PORT = "sma.port";
+    public static final String LAB_AGENT_RETRYCOUNT = "sma.retrycount";
+    public static final String LAB_MAIL_HOST = "mail.host";
+    public static final String LAB_MAIL_PORT = "mail.port";
+    public static final String LAB_MAIL_USERNAME = "mail.username";
+    public static final String LAB_MAIL_PASSWORD = "mail.password";
+    public static final String LAB_MAIL_PROTOCOL = "mail.transport.protocol";
+    public static final String LAB_MAIL_FROM = "mail.from";
+    public static final String LAB_MAIL_FROM_NAME = "mail.from.name";
+    public static final String LAB_MAIL_MAX_RUNS = "mail.max.simultaneous.runs";
 
-    public static DAOFactory getDAOFactory() {
-
-        switch (factory) {
-            case H2:
-                return H2DAOFactory.getInstance();
-            default:
-                return null;
-        }
-    }
-
-    protected DAOFactory() {
-        connect();
-        createTables();
-    }
-
-    protected abstract void connect();
-
-    protected abstract void createTables();
-
-    public abstract MessagePoolDAO getMessagePoolDAO();
+    public static final int CLEANER_POOL_SLEEP_HOURS = 24;
+    public static final int MESSAGE_POOL_SLEEP_SECONDS = 2;
+    public static final int MESSAGE_POOL_MAX_WAIT_SECONDS = 60;
+    public static final int TIMEOUT_POOL_SECONDS = 30;
+    public static final int MAX_DB_CONNECTIONS = 25;
+    public static final String LAB_MAIL_AUTH = "mail.auth";
+    public static final String LAB_MAIL_SSL_TRUST = "mail.smtp.ssl.trust";
 }

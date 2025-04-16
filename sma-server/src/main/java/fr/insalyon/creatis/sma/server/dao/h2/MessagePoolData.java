@@ -52,29 +52,16 @@ import org.apache.log4j.Logger;
  */
 public class MessagePoolData implements MessagePoolDAO {
 
-    private final static Logger logger = Logger.getLogger(MessagePoolData.class);
-    private static MessagePoolData instance;
-    private Connection connection;
-
-    public synchronized static MessagePoolData getInstance(Connection connection) {
-        if (instance == null) {
-            instance = new MessagePoolData(connection);
-        }
-        return instance;
-    }
-
-    private MessagePoolData(Connection connection) {
-        this.connection = connection;
-    }
+    private final static Logger LOG = Logger.getLogger(MessagePoolData.class);
 
     @Override
     public void add(MessageOperation operation) throws DAOException {
+        String query =  "INSERT INTO MessagePool(id, registration, fromEmail, fromName, subject, "
+        +               "contents, recipients, direct, status, username, retrycount) "
+        +               "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try {
-            PreparedStatement ps = connection.prepareStatement("INSERT INTO "
-                    + "MessagePool(id, registration, fromEmail, fromName, subject, "
-                    + "contents, recipients, direct, status, username, retrycount) "
-                    + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
 
             ps.setString(1, operation.getId());
             ps.setTimestamp(2, new Timestamp(operation.getRegistration().getTime()));
@@ -87,24 +74,23 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.setString(9, operation.getStatus().name());
             ps.setString(10, operation.getUsername());
             ps.setInt(11, operation.getRetryCount());
-            ps.execute();
-            ps.close();
+            ps.executeUpdate();
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
 
     @Override
     public void update(MessageOperation operation) throws DAOException {
+        String query =  "UPDATE MessagePool SET registration = ?, fromEmail = ?, fromName = ?, "
+        +               "subject = ?, contents = ?, recipients = ?, direct = ?, "
+        +               "status = ?, username = ?, retrycount = ? WHERE id = ?";
 
-        try {
-            PreparedStatement ps = connection.prepareStatement("UPDATE MessagePool "
-                    + "SET registration = ?, fromEmail = ?, fromName = ?, "
-                    + "subject = ?, contents = ?, recipients = ?, direct = ?, "
-                    + "status = ?, username = ?, retrycount = ? "
-                    + "WHERE id = ?");
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
+
             ps.setTimestamp(1, new Timestamp(operation.getRegistration().getTime()));
             ps.setString(2, operation.getFromEmail());
             ps.setString(3, operation.getFromName());
@@ -117,38 +103,36 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.setInt(10, operation.getRetryCount());
             ps.setString(11, operation.getId());
             ps.executeUpdate();
-            ps.close();
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
 
     @Override
     public void remove(MessageOperation operation) throws DAOException {
-        try {
-            PreparedStatement ps = connection.prepareStatement("DELETE "
-                    + "FROM MessagePool WHERE id=?");
+        String query = "DELETE FROM MessagePool WHERE id=?";
+
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
 
             ps.setString(1, operation.getId());
             ps.execute();
-            ps.close();
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
 
     @Override
     public List<MessageOperation> getPendingOperations() throws DAOException {
+        String query = getSelect() + "WHERE status = ? OR STATUS = ? ORDER BY registration";
 
-        try {
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
 
-            PreparedStatement ps = connection.prepareStatement(getSelect()
-                    + "WHERE status = ? OR status = ? "
-                    + "ORDER BY registration");
             ps.setString(1, OperationStatus.Queued.name());
             ps.setString(2, OperationStatus.Rescheduled.name());
 
@@ -157,38 +141,35 @@ public class MessagePoolData implements MessagePoolDAO {
             while (rs.next()) {
                 operations.add(getMessageOperation(rs));
             }
-            ps.close();
             return operations;
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
 
     @Override
     public List<MessageOperation> getOldOperations(Date date) throws DAOException {
+        List<MessageOperation> operations = new ArrayList<MessageOperation>();
+        String query =  getSelect() + "WHERE registration < ? AND (status = ? OR status = ?)"
+        +               "ORDER BY registration";
 
-        try {
-            List<MessageOperation> operations = new ArrayList<MessageOperation>();
-            PreparedStatement ps = connection.prepareStatement(
-                    getSelect()
-                    + "WHERE registration < ? "
-                    + "AND (status = ? OR status = ?)"
-                    + "ORDER BY registration");
+        try (Connection connection = H2Factory.getInstance().getConnection();
+            PreparedStatement ps = connection.prepareStatement(query)) {
 
             ps.setTimestamp(1, new Timestamp(date.getTime()));
             ps.setString(2, OperationStatus.Done.name());
             ps.setString(3, OperationStatus.Failed.name());
+
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 operations.add(getMessageOperation(rs));
             }
-            ps.close();
             return operations;
 
         } catch (SQLException ex) {
-            logger.error(ex);
+            LOG.error(ex);
             throw new DAOException(ex);
         }
     }
