@@ -35,20 +35,9 @@
 package fr.insalyon.creatis.sma.server.business;
 
 import fr.insalyon.creatis.sma.common.bean.MessageOperation;
-import fr.insalyon.creatis.sma.server.Configuration;
+import fr.insalyon.creatis.sma.common.bean.OperationStatus;
 import fr.insalyon.creatis.sma.server.dao.DAOException;
-import fr.insalyon.creatis.sma.server.dao.DAOFactory;
-import fr.insalyon.creatis.sma.server.execution.MessagePool;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.Properties;
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import org.apache.log4j.Logger;
+import fr.insalyon.creatis.sma.server.dao.MessagePoolDAO;
 
 /**
  *
@@ -56,83 +45,28 @@ import org.apache.log4j.Logger;
  */
 public class MessagePoolBusiness {
 
-    private final static Logger logger = Logger.getLogger(MessagePoolBusiness.class);
+    private final MessagePoolDAO messagePoolDAO;
 
-    /**
-     *
-     * @param operation
-     * @throws BusinessException
-     */
+    public MessagePoolBusiness(MessagePoolDAO messagePoolDAO) {
+        this.messagePoolDAO = messagePoolDAO;
+    }
+
     public void addOperation(MessageOperation operation) throws BusinessException {
-
         try {
-            DAOFactory.getDAOFactory().getMessagePoolDAO().add(operation);
-            MessagePool.getInstance();
+            messagePoolDAO.add(operation);
 
-        } catch (DAOException ex) {
-            throw new BusinessException(ex);
+        } catch (DAOException e) {
+            throw new BusinessException(e);
         }
     }
 
-    public void sendEmail(String ownerEmail, String owner, String subject,
-            String content, String[] recipients, boolean direct) throws BusinessException {
-        // see https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html 
+    public void updateStatus(MessageOperation operation, OperationStatus status) throws BusinessException {
         try {
-            logger.info("Sending email to: " + String.join(" ", recipients));
-            Configuration conf = Configuration.getInstance();
-            Properties props = new Properties();
-            props.setProperty("mail.transport.protocol", conf.getMailProtocol());
-            props.setProperty("mail.smtp.host", conf.getMailHost());
-            props.setProperty("mail.smtp.port", String.valueOf(conf.getMailPort()));
-            props.setProperty("mail.smtp.auth", String.valueOf(conf.isMailAuth()));
-            props.setProperty("mail.smtp.starttls.enable", String.valueOf(conf.isMailAuth()));
-            props.setProperty("mail.smtp.ssl.trust", conf.getMailSslTrust());
-            
-            Session session = Session.getDefaultInstance(props);
-            session.setDebug(false);
+            operation.setStatus(status);
+            messagePoolDAO.update(operation);
 
-            MimeMessage mimeMessage = new MimeMessage(session);
-            mimeMessage.setContent(content, "text/html");
-            mimeMessage.addHeader("Content-Type", "text/html");
-
-            InternetAddress from = new InternetAddress(ownerEmail, owner);
-            mimeMessage.setReplyTo(new InternetAddress[]{from});
-            mimeMessage.setFrom(from);
-            mimeMessage.setSentDate(new Date());
-            mimeMessage.setSubject(subject);
-
-            Transport transport = session.getTransport();
-
-            if (conf.isMailAuth()) {
-                transport.connect(
-                    conf.getMailHost(), conf.getMailPort(),
-                    conf.getMailUsername(), conf.getMailPassword());
-            } else {
-                transport.connect();
-            }
-
-            InternetAddress[] addressTo = null;
-
-            if (recipients != null && recipients.length > 0) {
-                addressTo = new InternetAddress[recipients.length];
-                for (int i = 0; i < recipients.length; i++) {
-                    addressTo[i] = new InternetAddress(recipients[i]);
-                }
-                if (direct) {
-                    mimeMessage.setRecipients(Message.RecipientType.TO, addressTo);
-                } else {
-                    mimeMessage.setRecipients(Message.RecipientType.BCC, addressTo);
-                }
-
-                transport.sendMessage(mimeMessage, addressTo);
-                transport.close();
-
-            } else {
-                logger.warn("There's no recipients to send the email.");
-            }
-        } catch (UnsupportedEncodingException | MessagingException ex) {
-            logger.error(ex);
-            throw new BusinessException(ex);
+        } catch (DAOException e){
+            throw new BusinessException(e);
         }
     }
 }

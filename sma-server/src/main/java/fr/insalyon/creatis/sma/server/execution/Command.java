@@ -45,7 +45,6 @@ public abstract class Command {
     protected Communication communication;
 
     protected Command(Communication communication) {
-
         this.communication = communication;
     }
 

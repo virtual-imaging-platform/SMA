@@ -5,8 +5,8 @@ mail.transport.protocol = smtps
 mail.host = smtp.creatis.insa-lyon.fr
 mail.port = 1
 
-# if an host is trusted, then SSL certificate won't be checked!
-mail.smtp.ssl.trust = localhost
+# if true, then only mail.host will be trusted, SSL certificate won't be checked!
+mail.smtp.ssl.trust = True
 
 mail.auth = True
 mail.username = b

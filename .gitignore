@@ -3,6 +3,6 @@
 /sma-server/target/
 db/
 sma-server.conf
-sma-server.log
+sma-server*.log
 .flattened-pom.xml
 .idea

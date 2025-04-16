@@ -30,7 +30,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package fr.insalyon.creatis.sma.server;
+package fr.insalyon.creatis.sma.server.utils;
 
 import java.io.File;
 import org.apache.commons.configuration.ConfigurationException;
@@ -43,7 +43,7 @@ import org.apache.log4j.Logger;
  */
 public class Configuration {
 
-    private static final Logger logger = Logger.getLogger(Configuration.class);
+    private static final Logger LOG = Logger.getLogger(Configuration.class);
     private static Configuration instance;
     private static final String confFile = "sma-server.conf";
     // General
@@ -52,8 +52,8 @@ public class Configuration {
     private int maxRetryCount;
     private int mailPort;
     private boolean mailAuth;
+    private boolean mailSslTrust;
     private String mailHost;
-    private String mailSslTrust;
     private String mailUsername;
     private String mailPassword;
     private String mailProtocol;
@@ -74,7 +74,7 @@ public class Configuration {
 
     private Configuration() {
         File configurationFile = new File(confFile);
-        logger.info("Loading configuration file.");
+        LOG.info("Loading configuration file.");
 
         try {
             if (configurationFile.exists()) {
@@ -87,18 +87,18 @@ public class Configuration {
                 maxHistory = config.getInt(Constants.LAB_AGENT_MAX_HISTORY, 90);
                 maxRetryCount = config.getInt(Constants.LAB_AGENT_RETRYCOUNT, 5);
                 mailHost = config.getString(Constants.LAB_MAIL_HOST, "smtp.localhost");
-                mailSslTrust = config.getString(Constants.LAB_MAIL_SSL_TRUST, "");
+                mailSslTrust = config.getBoolean(Constants.LAB_MAIL_SSL_TRUST, false);
                 mailPort = config.getInt(Constants.LAB_MAIL_PORT, 25);
                 mailProtocol = config.getString(Constants.LAB_MAIL_PROTOCOL, "smtp");
                 mailFrom = config.getString(Constants.LAB_MAIL_FROM, "example@example.com");
                 mailFromName = config.getString(Constants.LAB_MAIL_FROM_NAME, "Example");
-                mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 5);
+                mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 50);
             } else {
-                logger.error("Invalid configuration file path: " + configurationFile.getPath());
+                LOG.error("Invalid configuration file path: " + configurationFile.getPath());
                 throw new IllegalStateException("Configuration file must be present!");
             }
         } catch (ConfigurationException ex) {
-            logger.error(ex);
+            LOG.error(ex);
         }
     }
 
@@ -122,7 +122,7 @@ public class Configuration {
         return mailHost;
     }
 
-    public String getMailSslTrust() {
+    public boolean isMailSslTrust() {
         return mailSslTrust;
     }
 
