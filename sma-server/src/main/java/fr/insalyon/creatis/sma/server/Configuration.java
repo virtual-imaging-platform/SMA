@@ -94,6 +94,7 @@ public class Configuration {
                 mailFromName = config.getString(Constants.LAB_MAIL_FROM_NAME, "Example");
                 mailMaxRuns = config.getInt(Constants.LAB_MAIL_MAX_RUNS, 5);
             } else {
+                logger.error("Invalid configuration file path: " + configurationFile.getPath());
                 throw new IllegalStateException("Configuration file must be present!");
             }
         } catch (ConfigurationException ex) {
