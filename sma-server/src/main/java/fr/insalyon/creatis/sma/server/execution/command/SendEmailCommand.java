@@ -54,9 +54,8 @@ public class SendEmailCommand extends Command {
     private final String username;
     private final MessagePoolBusiness poolBusiness;
 
-    public SendEmailCommand(Communication communication, String subject,
-            String contents, String recipients, String direct, String username,
-            MessagePoolBusiness poolBusiness) {
+    public SendEmailCommand(Communication communication, MessagePoolBusiness poolBusiness,
+            String subject, String contents, String recipients, String direct, String username) {
 
         super(communication);
         this.subject = subject;

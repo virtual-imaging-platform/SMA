@@ -90,7 +90,7 @@ public class CommunicationExecutor extends Thread {
             switch (command) {
 
                 case ExecutorConstants.MESSAGEPOOL_ADD_OPERATION:
-                    return new SendEmailCommand(communication, tk[1], tk[2], tk[3], tk[4], tk[5], poolBusiness);
+                    return new SendEmailCommand(communication, poolBusiness, tk[1], tk[2], tk[3], tk[4], tk[5]);
 
                 default:
                     logException(new Exception("Command not recognized: " + message));
