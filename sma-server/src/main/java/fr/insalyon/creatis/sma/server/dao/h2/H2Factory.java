@@ -52,7 +52,7 @@ public class H2Factory {
 
     private static final Logger LOG = LoggerFactory.getLogger(H2Factory.class);
     private static H2Factory instance;
-    private final String DBURL = "jdbc:h2:file:./db/sma.dbl";
+    private final String DBURL = "jdbc:h2:file:./db/sma";
     private JdbcConnectionPool connectionPool;
 
     public static H2Factory getInstance() {
