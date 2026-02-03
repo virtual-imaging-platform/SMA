@@ -45,11 +45,12 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScheduledTasksCreator {
 
-    private static final Logger LOG = Logger.getLogger(ScheduledTasksCreator.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ScheduledTasksCreator.class);
 
     public PoolCleaner getPoolCleanerTask(MessagePoolDAO messagePoolDAO) {
         return new PoolCleaner(messagePoolDAO);

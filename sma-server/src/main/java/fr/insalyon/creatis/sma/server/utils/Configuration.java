@@ -35,7 +35,8 @@ package fr.insalyon.creatis.sma.server.utils;
 import java.io.File;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,7 +44,7 @@ import org.apache.log4j.Logger;
  */
 public class Configuration {
 
-    private static final Logger LOG = Logger.getLogger(Configuration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Configuration.class);
     private static Configuration instance;
     private static final String confFile = "sma-server.conf";
     // General
@@ -98,7 +99,7 @@ public class Configuration {
                 throw new IllegalStateException("Configuration file must be present!");
             }
         } catch (ConfigurationException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
         }
     }
 

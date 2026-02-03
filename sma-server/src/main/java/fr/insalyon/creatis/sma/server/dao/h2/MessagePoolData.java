@@ -44,7 +44,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -52,7 +54,7 @@ import org.apache.log4j.Logger;
  */
 public class MessagePoolData implements MessagePoolDAO {
 
-    private final static Logger LOG = Logger.getLogger(MessagePoolData.class);
+    private final static Logger LOG = LoggerFactory.getLogger(MessagePoolData.class);
 
     @Override
     public void add(MessageOperation operation) throws DAOException {
@@ -77,7 +79,7 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.executeUpdate();
 
         } catch (SQLException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
             throw new DAOException(ex);
         }
     }
@@ -105,7 +107,7 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.executeUpdate();
 
         } catch (SQLException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
             throw new DAOException(ex);
         }
     }
@@ -121,7 +123,7 @@ public class MessagePoolData implements MessagePoolDAO {
             ps.execute();
 
         } catch (SQLException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
             throw new DAOException(ex);
         }
     }
@@ -144,7 +146,7 @@ public class MessagePoolData implements MessagePoolDAO {
             return operations;
 
         } catch (SQLException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
             throw new DAOException(ex);
         }
     }
@@ -169,7 +171,7 @@ public class MessagePoolData implements MessagePoolDAO {
             return operations;
 
         } catch (SQLException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
             throw new DAOException(ex);
         }
     }
