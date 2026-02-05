@@ -14,7 +14,7 @@
         </rollingPolicy>
 
         <encoder>
-            <pattern>%d | %5p | %t | %c{1}:%L - %m%n %ex{2}</pattern>
+            <pattern>%d | %5p | %t | %c{1}:%L - %m%n %ex</pattern>
         </encoder>
     </appender>
 
