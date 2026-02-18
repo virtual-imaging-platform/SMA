@@ -32,10 +32,6 @@
  */
 package fr.insalyon.creatis.sma.server;
 
-/**
- *
- * @author Rafael Ferreira da Silva
- */
 public class Main {
 
     public static void main(String[] args) {

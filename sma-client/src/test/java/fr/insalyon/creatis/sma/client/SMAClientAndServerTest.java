@@ -9,11 +9,9 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
@@ -21,11 +19,10 @@ import com.icegreen.greenmail.smtp.SmtpServer;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetupTest;
 
-import fr.insalyon.creatis.sma.server.Configuration;
 import fr.insalyon.creatis.sma.server.SmaServer;
+import fr.insalyon.creatis.sma.server.utils.Configuration;
 import jakarta.mail.internet.MimeMessage;
 
-@TestInstance(Lifecycle.PER_CLASS)
 public class SMAClientAndServerTest {
 
     @Mock
@@ -38,34 +35,41 @@ public class SMAClientAndServerTest {
     private void mockConfig(SmtpServer server) {
         configuration = Mockito.mock(Configuration.class);
     
-        when(configuration.getMailHost()).thenReturn(server.getBindTo());
-        when(configuration.getMailProtocol()).thenReturn(server.getProtocol());
         when(configuration.getPort()).thenReturn(8082);
-        when(configuration.getMaxHistory()).thenReturn(90);
         when(configuration.getMaxRetryCount()).thenReturn(5);
+        when(configuration.getMaxHistory()).thenReturn(90);
+
+        when(configuration.getMailProtocol()).thenReturn(server.getProtocol());
+        when(configuration.getMailHost()).thenReturn(server.getBindTo());
+        when(configuration.getMailPort()).thenReturn(server.getPort());
+        when(configuration.isMailSslTrust()).thenReturn(false);
+
+        when(configuration.isMailAuth()).thenReturn(false);
+        when(configuration.getMailUsername()).thenReturn("");
+        when(configuration.getMailPassword()).thenReturn("");
+
         when(configuration.getMailFrom()).thenReturn("test@test.com");
         when(configuration.getMailFromName()).thenReturn("test");
-        when(configuration.getMailMaxRuns()).thenReturn(5);
+        when(configuration.getMailMaxRuns()).thenReturn(10);
         when(configuration.getMailPort()).thenReturn(server.getPort());
 
-        Configuration.getInstance().setConfiguration(configuration);
+        Configuration.setConfiguration(configuration);
     }
-    
-    @BeforeAll
-    public void initServer() throws InterruptedException {
-        mailServer = new GreenMail(ServerSetupTest.SMTP);
-        smaServer = new SmaServer();
 
+    @BeforeEach
+    private void createSmtp() throws InterruptedException {
+        mailServer = new GreenMail(ServerSetupTest.SMTP);
         mailServer.start();
         mockConfig(mailServer.getSmtp());
 
+        smaServer = new SmaServer();
         smaServer.start();
         smaServer.waitToBeReady();
     }
 
-    @AfterAll
-    public void stopServer() {
-        smaServer.interrupt();;
+    @AfterEach
+    public void deleteSmtp() {
+        smaServer.interrupt();
         mailServer.stop();
     }
 
@@ -75,10 +79,11 @@ public class SMAClientAndServerTest {
         final String message = "je suis vraiment trop fort";
         final String subject = "wow ce titre est incroyable";
         final String username = "bliblou";
+        final int nmails = 1000;
         String[] randomAddress;
         client = new SMAClient(InetAddress.getLocalHost(), configuration.getPort());
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < nmails; i++) {
             randomAddress = generateRandomAddress();
             client.sendEmail(subject, message, randomAddress, true, username);
             System.err.println("Sending mail to : " + randomAddress[0]);
@@ -86,11 +91,11 @@ public class SMAClientAndServerTest {
 
         before = Instant.now();
         System.err.println("Waiting for mails to reach de server !");
-        while (mailServer.getReceivedMessages().length != 1000) {
-            System.err.println("Waiting !");
+        while (mailServer.getReceivedMessages().length != nmails) {
+            System.err.println("Waiting ! (" + mailServer.getReceivedMessages().length + " mails arrived)");
             Thread.sleep(1000);
             after = Instant.now();
-            assertFalse(Duration.between(before, after).toMillis() > Constants.MAX_WAIT_SPAM);
+            assertFalse(Duration.between(before, after).toSeconds() > Constants.MAX_WAIT_SPAM_SEC);
         }
         System.err.println("All mails sended !");
 
@@ -100,7 +105,7 @@ public class SMAClientAndServerTest {
             assertEquals(mail.getContent(), message);
         }
     }
-
+ 
     private String[] generateRandomAddress() {
         return new String[] { UUID.randomUUID().toString() + "@insa.fr" };
     }

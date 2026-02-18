@@ -30,7 +30,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package fr.insalyon.creatis.sma.server;
+package fr.insalyon.creatis.sma.server.utils;
 
 /**
  *
@@ -43,8 +43,18 @@ public class Constants {
     public static final String LAB_AGENT_RETRYCOUNT = "sma.retrycount";
     public static final String LAB_MAIL_HOST = "mail.host";
     public static final String LAB_MAIL_PORT = "mail.port";
+    public static final String LAB_MAIL_USERNAME = "mail.username";
+    public static final String LAB_MAIL_PASSWORD = "mail.password";
     public static final String LAB_MAIL_PROTOCOL = "mail.transport.protocol";
     public static final String LAB_MAIL_FROM = "mail.from";
     public static final String LAB_MAIL_FROM_NAME = "mail.from.name";
     public static final String LAB_MAIL_MAX_RUNS = "mail.max.simultaneous.runs";
+
+    public static final int CLEANER_POOL_SLEEP_HOURS = 24;
+    public static final int MESSAGE_POOL_SLEEP_SECONDS = 2;
+    public static final int MESSAGE_POOL_MAX_WAIT_SECONDS = 60;
+    public static final int TIMEOUT_POOL_SECONDS = 30;
+    public static final int MAX_DB_CONNECTIONS = 25;
+    public static final String LAB_MAIL_AUTH = "mail.auth";
+    public static final String LAB_MAIL_SSL_TRUST = "mail.smtp.ssl.trust";
 }
