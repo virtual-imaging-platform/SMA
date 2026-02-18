@@ -40,8 +40,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.apache.log4j.Logger;
 import org.h2.jdbcx.JdbcConnectionPool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,9 +50,9 @@ import org.h2.jdbcx.JdbcConnectionPool;
  */
 public class H2Factory {
 
-    private static final Logger LOG = Logger.getLogger(H2Factory.class);
+    private static final Logger LOG = LoggerFactory.getLogger(H2Factory.class);
     private static H2Factory instance;
-    private final String DBURL = "jdbc:h2:file:./db/sma.dbl";
+    private final String DBURL = "jdbc:h2:file:./db/sma";
     private JdbcConnectionPool connectionPool;
 
     public static H2Factory getInstance() {

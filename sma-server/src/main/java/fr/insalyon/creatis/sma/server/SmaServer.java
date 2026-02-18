@@ -9,8 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.insalyon.creatis.sma.common.Communication;
 import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
@@ -23,7 +23,7 @@ import fr.insalyon.creatis.sma.server.utils.Constants;
 
 public class SmaServer extends Thread {
 
-    private static final Logger LOG = Logger.getLogger(Main.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     private final ScheduledExecutorService tasksExecutor;
     private final ExecutorService socketExecutor;
@@ -35,8 +35,6 @@ public class SmaServer extends Thread {
     private boolean started = false;
 
     public SmaServer() {
-        PropertyConfigurator.configure(Main.class.getClassLoader().getResource("smaLog4j.properties"));
-
         config = Configuration.getInstance();
         tasksExecutor = Executors.newSingleThreadScheduledExecutor();
         socketExecutor = Executors.newCachedThreadPool();

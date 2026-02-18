@@ -1,0 +1,24 @@
+<configuration debug="false" scan="true" scanPeriod="60 seconds" packagingData="true">
+    <!-- main log file-->
+    <appender name="SMA_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>sma-server.log</file>
+
+        <!-- since there is not unlimited rolling policy, this should be enough -->
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>sma-server-%i.out</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>50</maxIndex>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d | %5p | %t | %c{1}:%L - %m%n %ex</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="SMA_LOG" />
+    </root>
+</configuration>

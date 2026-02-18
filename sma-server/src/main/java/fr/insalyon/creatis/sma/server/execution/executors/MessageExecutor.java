@@ -49,11 +49,12 @@ import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageExecutor implements Callable<Void> {
 
-    private static final Logger LOG = Logger.getLogger(MessageExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MessageExecutor.class);
     private final MessageOperation operation;
     private final MessagePoolBusiness poolBusiness;
 
@@ -78,7 +79,7 @@ public class MessageExecutor implements Callable<Void> {
             poolBusiness.updateStatus(operation, OperationStatus.Done);
 
         } catch (BusinessException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
             retry();
         }
         return null;
@@ -144,7 +145,7 @@ public class MessageExecutor implements Callable<Void> {
                 LOG.warn("There's no recipients to send the email.");
             }
         } catch (UnsupportedEncodingException | MessagingException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
             throw new BusinessException(ex);
         }
     }

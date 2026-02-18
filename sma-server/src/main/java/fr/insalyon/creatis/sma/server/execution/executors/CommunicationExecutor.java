@@ -41,7 +41,9 @@ import fr.insalyon.creatis.sma.server.business.MessagePoolBusiness;
 import fr.insalyon.creatis.sma.server.execution.Command;
 import fr.insalyon.creatis.sma.server.execution.command.SendEmailCommand;
 import java.io.IOException;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -49,7 +51,7 @@ import org.apache.log4j.Logger;
  */
 public class CommunicationExecutor extends Thread {
 
-    private static final Logger LOG = Logger.getLogger(CommunicationExecutor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CommunicationExecutor.class);
     private final Communication communication;
     private final MessagePoolBusiness poolBusiness;
 
@@ -72,12 +74,12 @@ public class CommunicationExecutor extends Thread {
                 logException(new Exception("Error during message receive: " + message));
             }
         } catch (IOException ex) {
-            LOG.error(ex);
+            LOG.error("Error occured", ex);
         } finally {
             try {
                 communication.close();
             } catch (IOException ex) {
-                LOG.error(ex);
+                LOG.error("Error occured", ex);
             }
         }
     }
